@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GATE DA 2027 — Daily Planner</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3350;
+    --accent: #6c63ff;
+    --accent2: #00d4aa;
+    --accent3: #ff6584;
+    --warn: #f5a623;
+    --text: #e8eaf6;
+    --text2: #9097b8;
+    --text3: #5c6389;
+    --radius: 12px;
+    --font: 'Segoe UI', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { color-scheme: dark; box-sizing: border-box; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); background: var(--bg); }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  .topbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 100; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; }
+
+  .header {
+    background: linear-gradient(135deg, #1a1d27, #12142a);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+        display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+  }
+  .header h1 { font-size: 1.1rem; font-weight: 800; background: linear-gradient(90deg,#6c63ff,#00d4aa); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .header p { font-size: 0.72rem; color: var(--text2); margin-top: 2px; }
+  .hright { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .overall-wrap { display: flex; align-items: center; gap: 8px; }
+  .overall-wrap span { font-size: 0.72rem; color: var(--text2); }
+  .obar { width: 140px; height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
+  .obar-fill { height: 100%; background: linear-gradient(90deg,var(--accent),var(--accent2)); border-radius: 99px; transition: width 0.4s; }
+  .opct { font-size: 0.82rem; font-weight: 800; color: var(--accent2); min-width: 34px; }
+  .reset-btn { background: transparent; border: 1px solid var(--border); color: var(--text2); font-size: 0.7rem; padding: 4px 10px; border-radius: 6px; cursor: pointer; }
+  .reset-btn:hover { border-color: var(--accent3); color: var(--accent3); }
+
+  /* WEEK TABS */
+  .week-tabs { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 16px; display: flex; gap: 2px; overflow-x: auto; }
+  .wtab { padding: 10px 14px; cursor: pointer; white-space: nowrap; border-bottom: 3px solid transparent; font-size: 0.75rem; font-weight: 600; color: var(--text3); transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
+  .wtab:hover { color: var(--text2); }
+  .wtab.active { color: var(--text); border-bottom-color: var(--accent); }
+  .wtab-pct { font-size: 0.62rem; padding: 1px 5px; border-radius: 99px; background: var(--surface2); color: var(--text3); font-weight: 700; }
+  .wtab.active .wtab-pct { background: rgba(108,99,255,0.2); color: var(--accent); }
+
+  .main { padding: 20px 24px; max-width: 900px; margin: 0 auto; }
+  .week-panel { display: none; }
+  .week-panel.active { display: block; }
+
+  /* STATS */
+  .stats-row { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; flex: 1; min-width: 90px; }
+  .stat-label { font-size: 0.62rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+  .stat-value { font-size: 1.3rem; font-weight: 900; margin-top: 3px; }
+  .stat-sub { font-size: 0.65rem; color: var(--text3); margin-top: 1px; }
+
+  /* DAY CARD */
+  .day-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .day-card.completed { border-color: rgba(0,212,170,0.3); background: rgba(0,212,170,0.02); }
+  .day-card.revision-day { border-color: rgba(108,99,255,0.3); }
+  .day-card.today { border-color: var(--warn); box-shadow: 0 0 0 1px rgba(245,166,35,0.2); }
+
+  .day-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; cursor: pointer;
+  }
+  .day-header:hover { background: rgba(255,255,255,0.02); }
+  .day-num { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 800; flex-shrink: 0; }
+  .day-meta { flex: 1; }
+  .day-date { font-size: 0.85rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
+  .day-subject { font-size: 0.72rem; color: var(--text2); margin-top: 2px; }
+  .day-type { font-size: 0.62rem; padding: 2px 7px; border-radius: 99px; font-weight: 700; }
+  .type-study { background: rgba(0,212,170,0.12); color: var(--accent2); }
+  .type-revision { background: rgba(108,99,255,0.15); color: var(--accent); }
+  .type-mock { background: rgba(255,101,132,0.15); color: var(--accent3); }
+  .today-badge { font-size: 0.62rem; padding: 2px 7px; border-radius: 99px; background: rgba(245,166,35,0.2); color: var(--warn); font-weight: 700; }
+  .day-progress { display: flex; align-items: center; gap: 8px; }
+  .mini-bar { width: 70px; height: 4px; background: var(--border); border-radius: 99px; overflow: hidden; }
+  .mini-fill { height: 100%; border-radius: 99px; transition: width 0.3s; }
+  .mini-pct { font-size: 0.7rem; font-weight: 700; min-width: 28px; text-align: right; }
+  .day-chevron { font-size: 0.62rem; color: var(--text3); transition: transform 0.2s; }
+  .day-chevron.open { transform: rotate(180deg); }
+
+  /* TASKS */
+  .day-tasks { display: none; border-top: 1px solid var(--border); }
+  .day-tasks.open { display: block; }
+
+  .session-block { padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .session-block:last-child { border-bottom: none; }
+  .session-title { font-size: 0.65rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .session-hrs { font-size: 0.65rem; padding: 1px 6px; border-radius: 99px; background: var(--surface2); color: var(--text3); }
+
+  .task-item { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+  .task-item:last-child { border-bottom: none; }
+  .task-cb input[type=checkbox] { display: none; }
+  .task-cb label { width: 17px; height: 17px; border-radius: 5px; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s; flex-shrink: 0; margin-top: 1px; }
+  .task-cb input:checked + label { background: var(--accent2); border-color: var(--accent2); }
+  .task-cb input:checked + label::after { content: '✓'; color: #0f1117; font-size: 10px; font-weight: 900; }
+  .task-text { font-size: 0.8rem; color: var(--text2); line-height: 1.4; cursor: pointer; }
+  .task-item:has(input:checked) .task-text { color: var(--text3); text-decoration: line-through; }
+
+  .apt-strip { background: rgba(232,121,249,0.06); border-top: 1px solid rgba(232,121,249,0.15); padding: 8px 16px; display: flex; align-items: center; gap: 10px; }
+  .apt-strip-label { font-size: 0.68rem; color: #e879f9; font-weight: 600; }
+  .apt-cb input[type=checkbox] { display: none; }
+  .apt-cb label { width: 15px; height: 15px; border-radius: 4px; border: 2px solid rgba(232,121,249,0.3); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s; }
+  .apt-cb input:checked + label { background: #e879f9; border-color: #e879f9; }
+  .apt-cb input:checked + label::after { content: '✓'; color: #fff; font-size: 8px; font-weight: 900; }
+
+  /* SYNC STATUS */
+  .status { font-size: 0.7rem; padding: 4px 10px; border-radius: 99px; border: 1px solid var(--border); color: var(--text2); background: var(--surface2); white-space: nowrap; font-family: inherit; }
+  .status:empty { display: none; }
+  .status.ok { color: var(--accent2); border-color: rgba(0,212,170,0.3); }
+  .status.pending { color: var(--warn); border-color: rgba(245,166,35,0.35); }
+  .status.err { color: var(--accent3); border-color: rgba(255,101,132,0.4); }
+  button.status { cursor: pointer; }
+  button.status:hover { border-color: currentColor; }
+  .reset-btn[hidden] { display: none; }
+
+  /* READ-ONLY + SAVING */
+  body.readonly .task-cb label, body.readonly .apt-cb label, body.readonly .task-text { cursor: default; }
+  body.is-saving .day-tasks { opacity: 0.6; pointer-events: none; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+  @media(max-width:600px) { .main { padding: 12px; } .header { padding: 12px 14px; } }
+
+  /* OWNER SIGN-IN */
+  .modal-back[hidden] { display: none; }
+  .modal-back { position: fixed; inset: 0; z-index: 200; background: rgba(5,6,12,0.7); display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; width: 100%; max-width: 420px; }
+  .modal h2 { font-size: 1rem; margin-bottom: 8px; }
+  .modal p { font-size: 0.78rem; color: var(--text2); line-height: 1.5; margin-bottom: 12px; }
+  .modal input { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 10px 12px; font-size: 0.85rem; font-family: ui-monospace, monospace; }
+  .modal input:focus { outline: none; border-color: var(--accent); }
+  .modal-err { font-size: 0.74rem; color: var(--accent3); min-height: 1.2em; margin: 8px 0; line-height: 1.4; }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
+  .btn { background: var(--accent); border: none; color: #fff; font-size: 0.78rem; font-weight: 700; padding: 7px 16px; border-radius: 6px; cursor: pointer; }
+  .btn:disabled { opacity: 0.6; cursor: default; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+// ── PLAN DATA ──────────────────────────────────────────────────────────────
+const START = new Date('2026-10-05');
+const SUBJECTS = {
+  prob: { name: 'Probability & Stats', color: '#00d4aa', bg: 'rgba(0,212,170,0.12)', icon: '🎲' },
+  calc: { name: 'Calculus & Optimization', color: '#ff6584', bg: 'rgba(255,101,132,0.12)', icon: '📈' },
+  py:   { name: 'Python', color: '#f5a623', bg: 'rgba(245,166,35,0.12)', icon: '🐍' },
+  dsa:  { name: 'DSA', color: '#f5a623', bg: 'rgba(245,166,35,0.12)', icon: '💻' },
+  ml:   { name: 'Machine Learning', color: '#a78bfa', bg: 'rgba(167,139,250,0.12)', icon: '🤖' },
+  ai:   { name: 'Artificial Intelligence', color: '#34d399', bg: 'rgba(52,211,153,0.12)', icon: '🧠' },
+  db:   { name: 'DBMS & Warehousing', color: '#fb923c', bg: 'rgba(251,146,60,0.12)', icon: '🗄️' },
+  rev:  { name: 'Revision', color: '#6c63ff', bg: 'rgba(108,99,255,0.12)', icon: '🔁' },
+};
+
+// Each day: { type: 'study'|'revision', subject, morning: [...tasks], evening: [...tasks] }
+const DAYS = [
+  // ── OCT 5–7: PROBABILITY FOUNDATIONS ──
+  { type:'study', subject:'prob', morning:['Probability axioms, sample space, events','Addition & multiplication rules','Conditional probability derivation','Bayes theorem + proof','Law of total probability — 10 problems'], evening:['PYQ: All conditional probability questions (2022–25)','GATE Overflow Prob thread review','Formula sheet: Prob foundations'] },
+  { type:'study', subject:'prob', morning:['Discrete RVs — PMF, CDF definition','Expected value & variance derivation','Bernoulli, Binomial distributions','Geometric & Negative Binomial','20 problems on discrete distributions'], evening:['PYQ: Discrete distribution questions','Derive E[X] and Var[X] for each distribution from scratch','Notes: discrete distribution cheatsheet'] },
+  { type:'revision', subject:'rev', morning:['Full revision: LA (eigenvalues, SVD, projections)','Solve 10 unseen LA problems timed','Weak LA topics — re-derive once'], evening:['Revision: Prob Day 1–2 topics','10 mixed Prob+LA problems','Update formula sheet'] },
+
+  // ── OCT 8–10 ──
+  { type:'study', subject:'prob', morning:['Continuous RVs — PDF, CDF','Uniform & Normal distribution (derive properties)','Exponential & Gamma distribution','Joint distributions — marginal & conditional','20 problems on continuous distributions'], evening:['PYQ: Normal distribution questions','Chi-squared, t, F distribution — when used','Notes: continuous distributions'] },
+  { type:'study', subject:'prob', morning:['Expectation — E[g(X)], E[XY]','Variance, covariance, correlation','MGF definition & use cases','Jensen inequality, Markov & Chebyshev','20 problems on expectation & moments'], evening:['PYQ: Expectation & variance questions','Derive MGF for Binomial & Normal','Notes: moments cheatsheet'] },
+  { type:'revision', subject:'rev', morning:['Revision: Prob distributions (all)','Solve 15 mixed distribution problems timed','Identify which distribution fits a given scenario — 10 exercises'], evening:['Revision: Expectation & moments','10 unseen problems on covariance & MGF','Update Prob notes'] },
+
+  // ── OCT 11–13 ──
+  { type:'study', subject:'prob', morning:['Law of Large Numbers (weak & strong)','Central Limit Theorem — proof intuition','MLE derivation (general + examples)','Method of moments','20 problems on LLN & CLT'], evening:['PYQ: MLE questions (2022–25)','Derive MLE for Normal, Bernoulli, Poisson','Notes: estimation methods'] },
+  { type:'study', subject:'prob', morning:['Confidence intervals (Z & T)','Hypothesis testing — Type I & II errors','p-value, significance level','z-test, t-test, chi-squared test','ANOVA basics — 15 problems'], evening:['PYQ: Hypothesis testing questions','Bayesian statistics — prior, posterior, MAP','Conjugate priors — Beta-Binomial, Normal-Normal'] },
+  { type:'revision', subject:'rev', morning:['Full Prob revision: Foundations → Estimation','30 mixed Prob PYQs timed (2022–25 all years)','Score yourself & analyse every wrong answer'], evening:['Weak Prob topics deep drill','Sheldon Ross 10 hard problems','Prob notes — final update'] },
+
+  // ── OCT 14–16: CALCULUS ──
+  { type:'study', subject:'calc', morning:['Limits, continuity, differentiability','Derivatives — all rules (chain, product, quotient)','Higher order derivatives','Taylor & Maclaurin series','20 calculus problems'], evening:['PYQ: Calculus questions (2022–25)','Integration techniques — by parts, substitution','Notes: single variable calculus'] },
+  { type:'study', subject:'calc', morning:['Partial derivatives — definition & computation','Gradient vector & directional derivatives','Jacobian matrix','Chain rule — multivariable','20 multivariable problems'], evening:['Critical points — maxima, minima, saddle points','Hessian matrix & second derivative test','Lagrange multipliers — 10 problems'] },
+  { type:'revision', subject:'rev', morning:['Revision: Calculus Day 1–2','10 unseen calculus problems timed','Prob weak areas from last revision'], evening:['Convex sets & functions','Jensen inequality (calculus view)','KKT conditions basics — 5 problems'] },
+
+  // ── OCT 17–19: CALCULUS + OPTIMIZATION + PYTHON ──
+  { type:'study', subject:'calc', morning:['Convex optimization problems','Gradient descent algorithm — full derivation','Learning rate analysis & convergence','SGD, mini-batch GD','Adam, Momentum, RMSprop intuition — 15 problems'], evening:['PYQ: Optimization questions','3Blue1Brown Essence of Calculus (2 hrs)','Notes: optimization cheatsheet'] },
+  { type:'study', subject:'py', morning:['Python data types — int, float, str, bool','Lists, tuples, sets, dictionaries in depth','List comprehensions, dict comprehensions','Lambda, map, filter, reduce','File I/O & exception handling — 20 exercises'], evening:['Iterators & generators','Modules & imports','Python: solve 10 HackerRank Easy problems','Notes: Python syntax cheatsheet'] },
+  { type:'revision', subject:'rev', morning:['Full Calculus revision (all topics)','Full Python revision (all syntax)','10 mixed Calc + Python problems'], evening:['PYQ: All calculus (timed)','10 Python coding exercises','Calc + Python notes final update'] },
+
+  // ── OCT 20–22: DSA START ──
+  { type:'study', subject:'dsa', morning:['Arrays — traversal, prefix sums, sliding window','Two pointer technique — 15 problems','String operations & hashing','LeetCode Easy: 10 array problems','Complexity analysis of array operations'], evening:['LeetCode Medium: 5 array problems','String pattern matching problems','Notes: array techniques'] },
+  { type:'study', subject:'dsa', morning:['Linked lists — singly & doubly','Insert, delete, traverse','Reverse linked list (iterative & recursive)','Floyd cycle detection algorithm','Merge two sorted lists — 10 LL problems'], evening:['LeetCode: 8 linked list problems','Find middle, nth from end','Notes: linked list patterns'] },
+  { type:'revision', subject:'rev', morning:['Revision: Arrays + Strings + Linked Lists','Solve 15 LeetCode Easy array/LL timed','Prob revision — weak areas only'], evening:['10 mixed DSA problems','Notes update','Complexity table: all DS operations'] },
+
+  // ── OCT 23–25 ──
+  { type:'study', subject:'dsa', morning:['Stacks — operations & applications','Balanced parentheses, next greater element','Queues — circular queue, deque','Priority queue implementation','10 stack + 5 queue problems'], evening:['LeetCode: 10 stack/queue problems','Min stack, evaluate expression','Notes: stack & queue patterns'] },
+  { type:'study', subject:'dsa', morning:['Binary trees — all 4 traversals (code each)','BST — insert, delete, search','Height, diameter, level order BFS','Lowest common ancestor','10 tree problems'], evening:['LeetCode: 10 tree problems','AVL rotations — left, right, LR, RL','Notes: tree algorithms'] },
+  { type:'revision', subject:'rev', morning:['Revision: Stacks + Queues + Trees','15 mixed LeetCode problems timed','Calculus weak areas drill'], evening:['Heaps — min heap, max heap, heapify','Heap sort implementation','K largest elements problem'] },
+
+  // ── OCT 26–28 ──
+  { type:'study', subject:'dsa', morning:['Heaps — full depth','Hash tables — collision resolution (chaining, OA)','Two-sum & variants (10 problems)','Frequency counting patterns','LeetCode: 10 heap + 8 hash problems'], evening:['LeetCode Medium: 5 heap problems','Median in stream','Notes: heap & hash patterns'] },
+  { type:'study', subject:'dsa', morning:['Graph representation — adjacency list & matrix','BFS — iterative (code it)','DFS — iterative & recursive (code both)','Cycle detection undirected graph','10 graph traversal problems'], evening:['LeetCode: 10 graph problems','Bipartite check using BFS','Notes: graph traversal'] },
+  { type:'revision', subject:'rev', morning:['Revision: Heaps + Hashing + Graph basics','15 LeetCode mixed problems timed','Prob full revision — all PYQs once more'], evening:['Dijkstra shortest path — code it','Bellman-Ford — code it','10 shortest path problems'] },
+
+  // ── OCT 29–31 ──
+  { type:'study', subject:'dsa', morning:['Dijkstra + Bellman-Ford — full depth','Kruskal MST (Union-Find)','Prim MST','Topological sort (Kahn + DFS)','Strongly connected components (Kosaraju)'], evening:['LeetCode: 12 graph problems (Medium)','Cycle detection directed graph','Notes: advanced graph algorithms'] },
+  { type:'study', subject:'dsa', morning:['Sorting — merge sort (code + derive complexity)','Quick sort (code + average case proof)','Heap sort, counting sort','Binary search — all variants (10 problems)','Search in rotated sorted array'], evening:['LeetCode: 10 sorting + search problems','Time & space complexity of all sorts','Notes: sorting cheatsheet'] },
+  { type:'revision', subject:'rev', morning:['Revision: All graph algorithms','Solve 5 graph problems from scratch (no hints)','Revision: All sorting algorithms — code from memory'], evening:['10 LeetCode graph + sorting problems','Complexity table update','LA + Prob + Calc quick sweep (1 hr each)'] },
+
+  // ── NOV 1–3: DP ──
+  { type:'study', subject:'dsa', morning:['DP — memoization vs tabulation (theory)','0/1 Knapsack — derive & code','Longest Common Subsequence (LCS)','Longest Increasing Subsequence (LIS)','10 DP problems'], evening:['LeetCode: 10 DP problems (Easy+Medium)','Matrix chain multiplication','Notes: DP patterns'] },
+  { type:'study', subject:'dsa', morning:['Coin change problem','Edit distance — derive & code','DP on grids (unique paths, min path sum)','DP on trees','10 more DP problems'], evening:['LeetCode: 10 DP problems (Medium)','Greedy: activity selection, fractional knapsack','Huffman encoding'] },
+  { type:'revision', subject:'rev', morning:['Full DSA revision: Arrays → DP','DSA PYQ: All 2022–25 questions timed','Score & analyse every wrong answer'], evening:['LeetCode: 10 mixed hard problems','Master theorem & recurrences drill','NP, NP-complete basics'] },
+
+  // ── NOV 4–6: DSA FINISH + ML START ──
+  { type:'study', subject:'dsa', morning:['Algorithm complexity — Big-O, Omega, Theta','Recurrence relations — Master theorem (10 examples)','NP, NP-complete, NP-hard (understand, not memorize)','DSA PYQ: 2022–25 all years full solve','LeetCode: final 15 problems (target 200+ total)'], evening:['Weak DSA topics deep drill','Code 5 algorithms from memory (no IDE hints)','Notes: complexity final cheatsheet'] },
+  { type:'study', subject:'ml', morning:['ML types: supervised, unsupervised, semi, RL','Bias-variance tradeoff — full derivation','Overfitting, underfitting, regularization (L1 L2)','Cross-validation (k-fold) — why & how','Evaluation metrics: accuracy, precision, recall, F1, AUC-ROC'], evening:['PYQ: ML fundamentals questions','Derive bias-variance decomposition','Notes: ML fundamentals'] },
+  { type:'revision', subject:'rev', morning:['DSA final revision — weak topics only','ML Day 1 revision','10 DSA PYQs + 5 ML problems'], evening:['Loss functions deep dive','Train/val/test split strategy','Handling imbalanced datasets'] },
+
+  // ── NOV 7–9 ──
+  { type:'study', subject:'ml', morning:['Linear regression — OLS derivation','Multiple regression, polynomial regression','Ridge regression (L2) — derive solution','Lasso regression (L1) — why no closed form','20 regression problems'], evening:['PYQ: Regression questions','Logistic regression — log-likelihood derivation','Softmax — multiclass derivation'] },
+  { type:'study', subject:'ml', morning:['Decision tree — ID3, CART, Gini, info gain','Pruning — pre & post','Random forest — bagging explained','AdaBoost derivation','Gradient Boosting — 10 problems'], evening:['PYQ: Tree & ensemble questions','XGBoost basics','Notes: tree methods'] },
+  { type:'revision', subject:'rev', morning:['Revision: ML linear models + trees','10 ML PYQ questions timed','Prob + Calc quick revision (1 hr each)'], evening:['SVM — maximum margin derivation','Hard margin vs soft margin','Kernel trick — RBF, polynomial'] },
+
+  // ── NOV 10–12 ──
+  { type:'study', subject:'ml', morning:['SVM — full depth + dual formulation intuition','K-means algorithm + K-means++ init','Elbow method, silhouette score','Hierarchical clustering','DBSCAN — 10 clustering problems'], evening:['PYQ: SVM + clustering questions','GMM + EM algorithm derivation','Notes: SVM & clustering'] },
+  { type:'study', subject:'ml', morning:['PCA — derive via SVD & covariance matrix','Explained variance ratio','LDA — between/within class scatter','t-SNE intuition','Curse of dimensionality — 10 problems'], evening:['PYQ: PCA + dimensionality reduction','Feature selection vs feature extraction','Notes: dimensionality reduction'] },
+  { type:'revision', subject:'rev', morning:['Revision: SVM + Clustering + PCA','15 ML PYQs timed','DSA weak areas (graphs + DP) revisit'], evening:['MLP forward propagation — code it','Backpropagation — full derivation','Activation functions comparison'] },
+
+  // ── NOV 13–15 ──
+  { type:'study', subject:'ml', morning:['Neural networks — MLP full depth','Loss functions — MSE, cross-entropy derivation','Batch norm, dropout, weight initialization','CNN — conv layer, pooling, filters','RNN & LSTM — sequence modeling'], evening:['PYQ: Neural network questions','Attention mechanism basics','Prof Mitesh Khapra — 2 lectures'] },
+  { type:'study', subject:'ml', morning:['Naive Bayes classifier — full derivation','Bayesian linear regression','EM algorithm deep dive','Hidden Markov Models basics','Model selection: grid search, random search'], evening:['PYQ: Probabilistic ML questions','Learning curves — bias vs variance diagnosis','Feature importance methods'] },
+  { type:'revision', subject:'rev', morning:['Full ML revision (all topics)','ML PYQ: All 2022–25 timed','Score every section — analyse wrong answers'], evening:['ISLR: 2 chapters as supplement','Weak ML topics deep drill','ML notes final update'] },
+
+  // ── NOV 16–18: AI ──
+  { type:'study', subject:'ai', morning:['State space search formulation','BFS, DFS, IDDFS — code & compare','A* algorithm — admissibility, consistency','Greedy best-first search','10 search problems'], evening:['PYQ: AI search questions','Hill climbing variants','Simulated annealing intuition'] },
+  { type:'study', subject:'ai', morning:['Minimax algorithm — code it','Alpha-beta pruning — derive savings','Expectimax for chance nodes','CSP formulation','Backtracking for CSP — 10 problems'], evening:['PYQ: Adversarial search + CSP','Arc consistency (AC-3)','Variable & value ordering heuristics'] },
+  { type:'revision', subject:'rev', morning:['Revision: AI search + adversarial + CSP','10 AI PYQs timed','ML revision — weak topics'] },
+
+  // ── NOV 19–21 ──
+  { type:'study', subject:'ai', morning:['Propositional logic — syntax & semantics','Predicate/first-order logic','Resolution & unification','Inference rules','10 logic problems'], evening:['PYQ: Knowledge representation','Bayesian networks — structure & CPTs','D-separation rules'] },
+  { type:'study', subject:'ai', morning:['Bayesian networks — full inference','Variable elimination algorithm','Markov blanket','MDP formulation — states, actions, rewards','Bellman equations — derive'], evening:['PYQ: Probabilistic reasoning','Value iteration algorithm — code it','Policy iteration algorithm'] },
+  { type:'revision', subject:'rev', morning:['Revision: AI all topics','AI PYQ: All 2022–25 timed','Prob + LA quick revision (1 hr each)'], evening:['Q-learning basics','NLP: TF-IDF, word embeddings','NER basics, n-gram models'] },
+
+  // ── NOV 22–24: DBMS ──
+  { type:'study', subject:'db', morning:['Relational model — keys, constraints','Relational algebra: select, project, join, union, difference','SQL: SELECT, WHERE, GROUP BY, HAVING, ORDER BY','SQL: All JOIN types (INNER, LEFT, RIGHT, FULL, CROSS)','20 SQL problems'], evening:['PYQ: SQL questions (2022–25)','LeetCode SQL: 10 Easy problems','Notes: SQL cheatsheet'] },
+  { type:'study', subject:'db', morning:['SQL: Subqueries & nested queries','Window functions: ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD','CTEs (WITH clause)','Aggregation functions deep dive','Indexing: B+ tree, hash index — 15 SQL problems'], evening:['LeetCode SQL: 10 Medium problems','Views & their uses','Notes: advanced SQL'] },
+  { type:'revision', subject:'rev', morning:['Revision: SQL all topics','15 LeetCode SQL problems timed','AI revision — weak topics'], evening:['Functional dependencies, closure','1NF, 2NF, 3NF, BCNF — full derivation','Lossless decomposition proof'] },
+
+  // ── NOV 25–27 ──
+  { type:'study', subject:'db', morning:['Normalization full depth — 1NF to BCNF','Multivalued dependencies, 4NF basics','ACID properties — each in depth','Serializability — conflict & view','Precedence graphs — 10 problems'], evening:['PYQ: Normalization + transactions','2PL, strict 2PL, deadlock detection','Isolation levels — read phenomena'] },
+  { type:'study', subject:'db', morning:['Storage: file organization, B+ tree operations','Query optimization — cost estimation','OLTP vs OLAP','Star schema & snowflake schema','ETL process, data marts'], evening:['PYQ: DBMS warehousing questions','CUBE, ROLLUP operations','Columnar storage basics — notes'] },
+  { type:'revision', subject:'rev', morning:['Full DBMS revision (all topics)','DBMS PYQ: All 2022–25 timed','ML + AI quick revision (1 hr each)'], evening:['LeetCode SQL: 10 more problems','Weak DBMS topics drill','DBMS notes final update'] },
+
+  // ── NOV 28–30: FULL SYLLABUS DONE ──
+  { type:'study', subject:'db', morning:['DBMS PYQ: All years — full timed solve','LeetCode SQL: 10 final problems','DBMS weak topics final drill','Warehousing: all concepts tested','Notes: DBMS complete cheatsheet'], evening:['GATE Overflow DBMS threads','Transactions edge cases practice','Index selection problems'] },
+  { type:'revision', subject:'rev', morning:['🎯 FULL SYLLABUS REVISION — Day 1','LA + Probability (full sweep, notes only)','Solve 10 problems each subject'], evening:['Calculus + Python + DSA (full sweep)','10 problems each subject','Weak topics list: compile final list'] },
+  { type:'revision', subject:'rev', morning:['🎯 FULL SYLLABUS REVISION — Day 2','ML + AI + DBMS (full sweep, notes only)','Solve 10 problems each subject'], evening:['Full formula sheet review (all subjects)','PYQ: 5 questions per subject mixed','🎉 Syllabus complete — buy test series today'] },
+
+  // ── DEC 1–3: REVISION PASS 1 ──
+  { type:'revision', subject:'rev', morning:['Revision Pass 1 — LA deep dive','Re-derive: eigenvalues, SVD, projections','10 hard LA problems (GATE Overflow)'], evening:['Revision Pass 1 — Probability deep dive','Re-derive: MLE, CLT, Bayes theorem','10 hard Prob problems'] },
+  { type:'revision', subject:'rev', morning:['Revision Pass 1 — Calculus & Optimization','Re-derive: gradient descent, Lagrange','10 calc problems'], evening:['Revision Pass 1 — DSA','Re-code: Dijkstra, DP, BFS/DFS from memory','20 LeetCode problems'] },
+  { type:'revision', subject:'rev', morning:['Revision Pass 1 — ML','Re-derive: backprop, PCA, SVM','10 ML problems'], evening:['Revision Pass 1 — AI + DBMS','Re-solve: search problems, SQL queries','10 AI + 10 SQL problems'] },
+
+  // ── DEC 4–6 ──
+  { type:'revision', subject:'rev', morning:['General Aptitude — full Quant session','RS Aggarwal: Number systems, % , profit/loss','30 quant problems timed'], evening:['Aptitude: Time speed distance, time & work','Ratio & proportion, SI & CI','20 problems'] },
+  { type:'revision', subject:'rev', morning:['Aptitude: Data interpretation — bar, pie, line charts','Table & caselet problems','20 DI problems timed'], evening:['Aptitude: Logical reasoning — series, coding-decoding','Blood relations, direction sense','Syllogisms — 20 problems'] },
+  { type:'revision', subject:'rev', morning:['Weak topics identified — deep drill Day 1','Pick 3 weakest topics from revision notes','Spend 2.5 hrs each'], evening:['10 problems on each weak topic','GATE Overflow threads for each weak topic','Update formula sheet'] },
+
+  // ── DEC 7–9: MOCK BEGINS ──
+  { type:'mock', subject:'rev', morning:['🎯 MOCK 1 — Full 3 hr timed exam','Strict conditions: phone away, virtual calculator only','Attempt GA first (15 marks — easiest)'], evening:['Mock 1 analysis — 3 hrs minimum','Root cause every wrong answer','Score by subject — identify weakest 2'] },
+  { type:'mock', subject:'rev', morning:['Deep drill: Mock 1 weak subject 1','Re-study from GO Classes + notes','20 problems on that topic'], evening:['Deep drill: Mock 1 weak subject 2','Re-study from scratch','15 problems'] },
+  { type:'mock', subject:'rev', morning:['Revision: LA + Prob + Calc (notes sweep)','10 problems each subject','Formula sheet review'], evening:['🎯 MOCK 2 — Full 3 hr timed exam','Analyse immediately after — score target: 65+'] },
+
+  // ── DEC 10–12 ──
+  { type:'mock', subject:'rev', morning:['Mock 2 analysis — 3 hrs','Compare Mock 1 vs Mock 2 score trends','Weak topics list update'], evening:['Drill: Mock 2 weak topics (2 hrs each)','LeetCode: 10 problems','SQL: 5 problems'] },
+  { type:'mock', subject:'rev', morning:['Revision: DSA + ML (notes sweep)','Re-code 3 algorithms from memory','10 ML derivations quick'], evening:['🎯 MOCK 3 — Full 3 hr timed exam','Score target: 68+'] },
+  { type:'revision', subject:'rev', morning:['Mock 3 analysis','Speed analysis: how much time spent per section','Adjust section attempt order if needed'], evening:['Revision: AI + DBMS + Aptitude','10 AI problems, 10 SQL, 20 Aptitude'] },
+
+  // ── DEC 13–15 ──
+  { type:'mock', subject:'rev', morning:['Weak topic drill — top 3 from all mocks so far','2 hrs per topic, problems + theory'], evening:['🎯 MOCK 4 — Full 3 hr timed exam','Score target: 70+'] },
+  { type:'mock', subject:'rev', morning:['Mock 4 analysis','Error log: categorise errors (silly, concept, time)','Silly errors correction strategy'], evening:['GATE DA 2022 full paper — timed','Analyse after: note pattern differences'] },
+  { type:'mock', subject:'rev', morning:['GATE DA 2023 full paper — timed','Analyse patterns vs mock tests'], evening:['GATE DA 2024 full paper — timed','GATE DA 2025 full paper — timed','Compare all 4 paper patterns'] },
+
+  // ── DEC 16–18 ──
+  { type:'mock', subject:'rev', morning:['🎯 MOCK 5 — Full timed','Score target: 73+'], evening:['Mock 5 analysis','Second test series: attempt Mock 1 (different setter)','Note style differences'] },
+  { type:'mock', subject:'rev', morning:['Full Prob + LA revision (final pass)','All formula sheets reviewed'], evening:['🎯 MOCK 6 — Full timed','Score target: 75+'] },
+  { type:'mock', subject:'rev', morning:['Mock 6 analysis — 3 hrs','Drill: top 2 weak subjects'], evening:['Aptitude: 30 problems timed','Verbal reasoning practice'] },
+
+  // ── DEC 19–21 ──
+  { type:'mock', subject:'rev', morning:['🎯 MOCK 7 — Full timed','Score target: 77+'], evening:['Mock 7 analysis','DSA: 15 LeetCode Medium problems'] },
+  { type:'mock', subject:'rev', morning:['Full ML + AI revision (final pass)'], evening:['🎯 MOCK 8 — Full timed','Score target: 79+'] },
+  { type:'mock', subject:'rev', morning:['Mock 8 analysis','Second test series: Mock 2'], evening:['DBMS: 10 SQL hard problems','Weak areas drill'] },
+
+  // ── DEC 22–24 ──
+  { type:'mock', subject:'rev', morning:['🎯 MOCK 9 — Full timed','Score target: 81+'], evening:['Mock 9 analysis','All subjects: 5 PYQs each timed'] },
+  { type:'mock', subject:'rev', morning:['Full revision: all formula sheets','Annotated notes final review'], evening:['🎯 MOCK 10 — Full timed','Score target: 83+'] },
+  { type:'mock', subject:'rev', morning:['Mock 10 analysis — deep','Compile: error log all 10 mocks','Pattern: which topic costs most marks consistently?'], evening:['Targeted drill: that topic (3 hrs)','Rest: light revision'] },
+
+  // ── DEC 25–27 ──
+  { type:'mock', subject:'rev', morning:['🎯 MOCK 11 — Full timed','Score target: 85+'], evening:['Mock 11 analysis'] },
+  { type:'mock', subject:'rev', morning:['Second test series: Mock 3','Different setter = different patterns'], evening:['Analysis + weak topic drill'] },
+  { type:'mock', subject:'rev', morning:['🎯 MOCK 12 — Full timed','Score target: 87+'], evening:['Mock 12 analysis','All PYQs: 5 per subject timed'] },
+
+  // ── DEC 28–31: FINAL PUSH ──
+  { type:'mock', subject:'rev', morning:['🎯 MOCK 13 — Full timed','Score target: 89+'], evening:['Analysis + drill'] },
+  { type:'mock', subject:'rev', morning:['Full syllabus notes: final sweep','All formula sheets read (2 hrs)'], evening:['🎯 MOCK 14 — Full timed','Score target: 90+'] },
+  { type:'mock', subject:'rev', morning:['Mock 14 analysis','Remaining weak topics — final drill'], evening:['Second test series: Mock 4','Light revision'] },
+  { type:'mock', subject:'rev', morning:['🎯 MOCK 15 — Full timed (Dec 31)','Score target: 90+','🎯 DEC 31 TARGET: Consistently 90+ in mocks'], evening:['Analysis','Plan January: 1 mock daily','Prepare error log for January review'] },
+];
+
+// ─── STORAGE: your GitHub repo ───────────────────────────────────────────
+// Progress lives in progress.json in the same public repo that serves this
+// page on GitHub Pages. Everyone reads it; only you can write it, using a
+// fine-grained token (this repo only, Contents: read & write) that you paste
+// once per device. Each save is a commit, so the repo keeps full history.
+const CONFIG = {
+  owner: '',               // GitHub username. Blank = read from <username>.github.io
+  repo: '',                // repo name. Blank = read from the URL path
+  branch: '',              // blank = the repo's default branch
+  path: 'progress.json',
+};
+const TOKEN_KEY = 'gate_gh_token';        // owner's token, this browser only
+const PENDING_KEY = 'gate_gh_pending';    // ticks not yet committed (survives reloads)
+const CACHE_KEY = 'gate_gh_cache';        // last progress seen, for instant first paint
+const LOCAL_KEY = 'gate_daily_v4';        // fallback when opened as a plain file
+const OLD_LOCAL_KEY = 'gate_daily_v3';
+const UI_KEY = 'gate_daily_ui';           // per viewer: which days are expanded
+const SAVE_DELAY = 2500;
+const REFRESH_MS = 5 * 60 * 1000;
+
+const REPO = detectRepo();
+let ui = loadUI();                // { open: { dayIndex: true } }
+let activeWeek = 0;
+let mode = 'loading';             // 'loading' | 'owner' | 'viewer' | 'local'
+let ready = false;                // first load from GitHub finished
+let token = lsGet(TOKEN_KEY) || '';
+let remote = loadCache();         // last progress.json seen { done, updatedAt }
+let pending = {};                 // taskKey -> true / false, not yet committed
+let resetSeq = 0, savedResetSeq = 0;
+let state = { done: { ...remote.done }, updatedAt: remote.updatedAt };
+let saving = false, saveTimer = null, saveError = '', saveAction = '', loadError = '';
+let lastFetch = 0, retryDelay = 5000;
+
+function detectRepo() {
+  const m = location.hostname.match(/^([a-z0-9-]+)\.github\.io$/i);
+  const owner = CONFIG.owner || (m && m[1]);
+  if (!owner) return null;
+  let repo = CONFIG.repo;
+  if (!repo) {
+    if (!m) return null;
+    const first = location.pathname.split('/').filter(Boolean)[0];
+    repo = first && !/\.html?$/i.test(first) ? decodeURIComponent(first) : owner + '.github.io';
+  }
+  return { owner, repo };
+}
+
+function lsGet(k) { try { return localStorage.getItem(k); } catch { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); } catch {} }
+function lsDel(k) { try { localStorage.removeItem(k); } catch {} }
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
+
+function normalize(s) {
+  const done = {};
+  if (s && s.done && typeof s.done === 'object') for (const k in s.done) if (s.done[k]) done[k] = true;
+  return { done, updatedAt: (s && typeof s.updatedAt === 'number') ? s.updatedAt : null };
+}
+function loadCache() { try { return normalize(JSON.parse(lsGet(CACHE_KEY))); } catch { return normalize(null); } }
+function saveCache(s) { lsSet(CACHE_KEY, JSON.stringify(s)); }
+function isDone(k) { return !!state.done[k]; }
+function editable() { return (mode === 'owner' && ready) || mode === 'local'; }
+function hasPending() { return resetSeq > savedResetSeq || Object.keys(pending).length > 0; }
+
+function loadUI() {
+  try { const u = JSON.parse(lsGet(UI_KEY)); if (u && u.open) return u; } catch {}
+  return { open: {} };
+}
+function saveUI() { lsSet(UI_KEY, JSON.stringify(ui)); }
+
+function persistPending() {
+  if (hasPending()) lsSet(PENDING_KEY, JSON.stringify({ ops: pending, reset: resetSeq > savedResetSeq }));
+  else lsDel(PENDING_KEY);
+}
+function restorePending() {
+  try {
+    const p = JSON.parse(lsGet(PENDING_KEY));
+    if (p && p.ops) pending = p.ops;
+    if (p && p.reset) { resetSeq = 1; savedResetSeq = 0; }
+  } catch {}
+}
+// What you see as owner = last committed progress + your uncommitted ticks
+function withPending(base) {
+  const done = resetSeq > savedResetSeq ? {} : { ...base.done };
+  for (const k in pending) { if (pending[k]) done[k] = true; else delete done[k]; }
+  return { done, updatedAt: base.updatedAt };
+}
+
+// ── GitHub Contents API ──
+function b64encode(str) {
+  const bytes = new TextEncoder().encode(str);
+  let bin = '';
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin);
+}
+function b64decode(b64) {
+  const bin = atob(String(b64).replace(/\s/g, ''));
+  return new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0)));
+}
+function apiBase() { return `https://api.github.com/repos/${encodeURIComponent(REPO.owner)}/${encodeURIComponent(REPO.repo)}`; }
+function fileUrl() { return apiBase() + '/contents/' + CONFIG.path.split('/').map(encodeURIComponent).join('/'); }
+function ghHeaders(auth) {
+  const h = { Accept: 'application/vnd.github+json' };
+  if (auth && token) h.Authorization = 'Bearer ' + token;
+  return h;
+}
+function httpError(res, msg) {
+  const e = new Error(msg || ('HTTP ' + res.status));
+  e.status = res.status;
+  e.rateLimited = (res.status === 403 || res.status === 429) && res.headers.get('x-ratelimit-remaining') === '0';
+  return e;
+}
+async function ghRead(auth) {
+  const q = CONFIG.branch ? '?ref=' + encodeURIComponent(CONFIG.branch) : '';
+  const res = await fetch(fileUrl() + q, { headers: ghHeaders(auth), cache: 'no-store' });
+  if (res.status === 404) return { sha: null, data: normalize(null), missing: true };
+  if (!res.ok) throw httpError(res);
+  const j = await res.json();
+  let data;
+  try { data = normalize(JSON.parse(b64decode(j.content || '') || 'null')); } catch { data = normalize(null); }
+  return { sha: j.sha, data };
+}
+// Viewers: GitHub API first (always fresh). If that's rate-limited, the copy
+// GitHub Pages serves next to this page (can lag a minute or two).
+async function readProgress(auth) {
+  try { return (await ghRead(auth)).data; }
+  catch (e) {
+    if (auth) throw e;
+    const res = await fetch(new URL(CONFIG.path, location.href).href + '?t=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) throw e;
+    return normalize(await res.json());
+  }
+}
+
+function commitMessage(ops, reset) {
+  if (reset) return 'Reset progress';
+  const keys = Object.keys(ops);
+  const on = keys.filter(k => ops[k]).length, off = keys.length - on;
+  const days = [...new Set(keys.map(k => +k.split('_')[1] + 1))].sort((a, b) => a - b);
+  const parts = [];
+  if (on) parts.push(`ticked ${on}`);
+  if (off) parts.push(`unticked ${off}`);
+  return `Progress: ${parts.join(', ')} (D${days.join(', D')})`;
+}
+
+// ── Load ──
+async function refresh() {
+  if (!REPO || saving) return;
+  lastFetch = Date.now();
+  try {
+    const data = await readProgress(mode === 'owner');
+    if (saving) return;
+    remote = data; loadError = '';
+    saveCache(remote);
+    state = mode === 'owner' ? withPending(remote) : { done: { ...remote.done }, updatedAt: remote.updatedAt };
+  } catch (e) {
+    if (mode === 'owner' && e.status === 401) { tokenRejected(); return; }
+    loadError = e.rateLimited ? 'GitHub rate limit' : 'offline';
+  }
+  ready = true;
+  renderAll();
+}
+
+// ── Save (owner) ──
+function queueSave(delay) {
+  if (mode === 'local') {
+    state.updatedAt = Date.now();
+    lsSet(LOCAL_KEY, JSON.stringify(state));
+    renderStatus();
+    return;
+  }
+  if (mode !== 'owner') return;
+  saveError = ''; saveAction = '';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveNow, delay == null ? SAVE_DELAY : delay);
+  renderStatus();
+}
+
+async function saveNow() {
+  clearTimeout(saveTimer);
+  if (mode !== 'owner' || saving || !hasPending()) return;
+  saving = true; saveError = ''; saveAction = '';
+  renderStatus();
+  const ops = { ...pending }, seq = resetSeq, reset = resetSeq > savedResetSeq;
+  try {
+    for (let attempt = 0; ; attempt++) {
+      // Always start from the latest committed file, so ticks made on another
+      // device are kept and nothing is overwritten.
+      const cur = await ghRead(true);
+      const done = reset ? {} : { ...cur.data.done };
+      for (const k in ops) { if (ops[k]) done[k] = true; else delete done[k]; }
+      const sorted = {};
+      Object.keys(done).sort().forEach(k => { sorted[k] = true; });
+      const next = { done: sorted, updatedAt: Date.now() };
+      const body = { message: commitMessage(ops, reset), content: b64encode(JSON.stringify(next, null, 2) + '\n') };
+      if (cur.sha) body.sha = cur.sha;
+      if (CONFIG.branch) body.branch = CONFIG.branch;
+      const res = await fetch(fileUrl(), {
+        method: 'PUT',
+        headers: { ...ghHeaders(true), 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if ((res.status === 409 || res.status === 422) && attempt < 3) continue; // file changed meanwhile
+      if (!res.ok) throw httpError(res);
+      // Committed. Drop the ops that went in (unless changed again since).
+      for (const k in ops) if (pending[k] === ops[k]) delete pending[k];
+      if (seq > savedResetSeq) savedResetSeq = seq;
+      persistPending();
+      remote = next; saveCache(remote);
+      state = withPending(remote);
+      saving = false; retryDelay = 5000;
+      renderAll();
+      if (hasPending()) queueSave(800);
+      return;
+    }
+  } catch (e) {
+    saving = false;
+    if (e.status === 401) { tokenRejected(); return; }
+    if (e.status === 403 || e.status === 404) {
+      if (e.rateLimited) { saveError = 'GitHub rate limit · retrying'; scheduleRetry(60000); }
+      else { saveError = "Token can't write to this repo · fix"; saveAction = 'openLogin()'; }
+    } else if (!e.status || e.status >= 500 || e.status === 429) {
+      saveError = 'Not saved · retrying'; scheduleRetry();
+    } else {
+      saveError = 'Not saved · tap to retry'; saveAction = 'saveNow()';
+    }
+    renderStatus();
+  }
+}
+function scheduleRetry(ms) {
+  saveAction = 'saveNow()';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveNow, ms || retryDelay);
+  retryDelay = Math.min(retryDelay * 2, 120000);
+}
+
+// ── Owner sign-in ──
+function tokenRejected() {
+  // Expired or revoked token: fall back to view-only, keep unsaved ticks
+  token = ''; lsDel(TOKEN_KEY);
+  mode = 'viewer'; saving = false;
+  saveError = hasPending() ? 'Token expired · sign in to save' : 'Token expired · sign in again';
+  saveAction = 'openLogin()';
+  state = { done: { ...remote.done }, updatedAt: remote.updatedAt };
+  ready = true;
+  renderAll();
+}
+function openLogin() {
+  if (!REPO) return;
+  const box = document.getElementById('login');
+  document.getElementById('login-repo').textContent = REPO.owner + '/' + REPO.repo;
+  document.getElementById('tok-err').textContent = '';
+  box.hidden = false;
+  setTimeout(() => document.getElementById('tok').focus(), 30);
+}
+function closeLogin() {
+  document.getElementById('login').hidden = true;
+  document.getElementById('tok').value = '';
+  if (location.hash === '#owner') history.replaceState(null, '', location.pathname + location.search);
+}
+async function submitLogin() {
+  const input = document.getElementById('tok'), err = document.getElementById('tok-err'), btn = document.getElementById('tok-btn');
+  const t = input.value.trim();
+  if (!t) { err.textContent = 'Paste the token first.'; return; }
+  btn.disabled = true; err.textContent = 'Checking…';
+  try {
+    const h = { Accept: 'application/vnd.github+json', Authorization: 'Bearer ' + t };
+    const who = await fetch('https://api.github.com/user', { headers: h, cache: 'no-store' });
+    if (who.status === 401) throw new Error('GitHub rejected this token. Check you copied all of it, and that it hasn\'t expired.');
+    if (!who.ok) throw new Error('Couldn\'t reach GitHub (HTTP ' + who.status + '). Try again.');
+    const login = (await who.json()).login || '';
+    if (login.toLowerCase() !== REPO.owner.toLowerCase()) {
+      throw new Error(`This token belongs to "${login}", but this planner lives in ${REPO.owner}'s account. Create the token while signed in as ${REPO.owner}.`);
+    }
+    const repo = await fetch(apiBase(), { headers: h, cache: 'no-store' });
+    if (!repo.ok) throw new Error(`The token can't see ${REPO.owner}/${REPO.repo}. Under "Repository access", pick this repo.`);
+    token = t; lsSet(TOKEN_KEY, t);
+    mode = 'owner'; ready = false; saveError = ''; saveAction = '';
+    restorePending();
+    closeLogin();
+    renderAll();
+    await refresh();
+    if (hasPending()) queueSave(300);
+  } catch (e) {
+    err.textContent = e.message || 'Something went wrong.';
+  } finally {
+    btn.disabled = false;
+  }
+}
+function signOut() {
+  if (hasPending() && !confirm('Some ticks are not saved yet. Sign out anyway? (They stay on this device until you sign in again.)')) return;
+  token = ''; lsDel(TOKEN_KEY);
+  clearTimeout(saveTimer);
+  mode = 'viewer'; saveError = ''; saveAction = '';
+  state = { done: { ...remote.done }, updatedAt: remote.updatedAt };
+  renderAll();
+}
+
+// ── Start ──
+async function initPersistence() {
+  if (!REPO) {
+    // Opened as a local file (or on a host it can't recognise): this browser only
+    try {
+      const v4 = JSON.parse(lsGet(LOCAL_KEY));
+      if (v4 && v4.done) state = normalize(v4);
+      else {
+        const v3 = JSON.parse(lsGet(OLD_LOCAL_KEY)) || {};
+        const done = {};
+        Object.keys(v3).forEach(k => { if (v3[k] && !k.startsWith('open_day_')) done[k] = true; });
+        state = { done, updatedAt: null };
+      }
+    } catch {}
+    mode = 'local'; ready = true;
+    renderAll();
+    return;
+  }
+  if (token) { mode = 'owner'; restorePending(); state = withPending(remote); }
+  else mode = 'viewer';
+  renderAll();
+  await refresh();
+  if (mode === 'owner' && hasPending()) queueSave(500);
+  if (mode !== 'owner' && location.hash === '#owner') openLogin();
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') { if (mode === 'owner' && hasPending()) saveNow(); }
+  else if (Date.now() - lastFetch > 60000 && !hasPending()) refresh();
+});
+window.addEventListener('online', () => { if (mode === 'owner' && hasPending()) saveNow(); else refresh(); });
+window.addEventListener('hashchange', () => { if (location.hash === '#owner' && mode !== 'owner') openLogin(); });
+window.addEventListener('beforeunload', e => { if (mode === 'owner' && (saving || hasPending())) { e.preventDefault(); e.returnValue = ''; } });
+setInterval(() => { if (document.visibilityState === 'visible' && !hasPending()) refresh(); }, REFRESH_MS);
+
+// ─── DATES ───────────────────────────────────────────────────────────────
+function dayDate(i) {
+  const d = new Date(2026, 9, 5); // Oct 5 2026
+  d.setDate(d.getDate() + i);
+  return d;
+}
+function formatDate(d) {
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}`;
+}
+function isToday(d) {
+  const t = new Date();
+  return d.getDate() === t.getDate() && d.getMonth() === t.getMonth() && d.getFullYear() === t.getFullYear();
+}
+function timeAgo(ms) {
+  if (!ms) return '';
+  const s = Math.max(0, (Date.now() - ms) / 1000);
+  if (s < 60) return 'just now';
+  if (s < 3600) return Math.floor(s / 60) + ' min ago';
+  if (s < 86400) return Math.floor(s / 3600) + ' h ago';
+  const d = new Date(ms);
+  return formatDate(d);
+}
+
+// ─── PROGRESS ────────────────────────────────────────────────────────────
+function dayTasks(i) {
+  const d = DAYS[i];
+  if (!d || !d.morning || !d.evening) return [];
+  const tasks = [];
+  d.morning.forEach((t,j) => tasks.push(`m_${i}_${j}`));
+  d.evening.forEach((t,j) => tasks.push(`e_${i}_${j}`));
+  tasks.push(`apt_${i}`);
+  return tasks;
+}
+function dayPct(i) {
+  const tasks = dayTasks(i);
+  if (!tasks.length) return 0;
+  const done = tasks.filter(isDone).length;
+  return Math.round(done / tasks.length * 100);
+}
+function weekDays(w) {
+  const start = w * 7, end = Math.min(start + 7, DAYS.length);
+  return Array.from({length: end - start}, (_, i) => start + i);
+}
+function weekPct(w) {
+  const days = weekDays(w);
+  if (!days.length) return 0;
+  const total = days.reduce((s,i) => s + dayTasks(i).length, 0);
+  const done = days.reduce((s,i) => s + dayTasks(i).filter(isDone).length, 0);
+  return total ? Math.round(done/total*100) : 0;
+}
+function overallPct() {
+  let total = 0, done = 0;
+  DAYS.forEach((_, i) => {
+    const tasks = dayTasks(i);
+    total += tasks.length;
+    done += tasks.filter(isDone).length;
+  });
+  return total ? Math.round(done/total*100) : 0;
+}
+
+const TOTAL_WEEKS = Math.ceil(DAYS.length / 7);
+
+// ─── RENDER ──────────────────────────────────────────────────────────────
+function renderShell() {
+  document.getElementById('root').innerHTML = `
+<div class="topbar">
+  <div class="header">
+    <div>
+      <h1>⚡ GATE DA 2027 — Daily Planner</h1>
+      <p>Oct 5 → Dec 31 · 12 hrs/day · Revision every 3 days · Aptitude daily</p>
+    </div>
+    <div class="hright">
+      <div class="overall-wrap">
+        <span>Overall</span>
+        <div class="obar"><div class="obar-fill" id="obar-fill"></div></div>
+        <span class="opct" id="opct">0%</span>
+      </div>
+      <span id="status-slot"></span>
+      <button class="reset-btn" id="reset-btn" onclick="resetAll()" hidden>Reset</button>
+      <button class="reset-btn" id="signout-btn" onclick="signOut()" hidden>Sign out</button>
+    </div>
+  </div>
+  <div class="week-tabs" id="week-tabs"></div>
+</div>
+<div class="main" id="main"></div>
+<div class="modal-back" id="login" hidden onclick="if(event.target===this)closeLogin()">
+  <form class="modal" onsubmit="event.preventDefault();submitLogin()">
+    <h2>Owner sign-in</h2>
+    <p>Paste your fine-grained GitHub token for <b id="login-repo"></b> (Contents: read and write). It stays in this browser and is only ever sent to GitHub.</p>
+    <input type="password" id="tok" placeholder="github_pat_…" autocomplete="off" spellcheck="false">
+    <div class="modal-err" id="tok-err" role="alert"></div>
+    <div class="modal-actions">
+      <button type="button" class="reset-btn" onclick="closeLogin()">Cancel</button>
+      <button type="submit" class="btn" id="tok-btn">Sign in</button>
+    </div>
+  </form>
+</div>`;
+}
+
+function renderStatus() {
+  const slot = document.getElementById('status-slot');
+  if (!slot) return;
+  let cls = '', text = '', action = '';
+  if (mode === 'loading' || (mode !== 'local' && !ready)) { cls = 'pending'; text = 'Loading…'; }
+  else if (mode === 'local') { text = 'Saved in this browser only'; }
+  else if (mode === 'viewer') {
+    if (saveError) { cls = 'err'; text = saveError; action = saveAction; }
+    else text = '👀 View only' + (loadError ? ' · ' + loadError : (state.updatedAt ? ' · updated ' + timeAgo(state.updatedAt) : ''));
+  }
+  else if (mode === 'owner') {
+    if (saving) { cls = 'pending'; text = 'Saving…'; }
+    else if (saveError) { cls = 'err'; text = saveError; action = saveAction; }
+    else if (hasPending()) { cls = 'pending'; text = 'Unsaved · save now'; action = 'saveNow()'; }
+    else if (loadError) { cls = 'err'; text = '✓ Signed in · ' + loadError; }
+    else { cls = 'ok'; text = '✓ Saved' + (state.updatedAt ? ' · ' + timeAgo(state.updatedAt) : ''); }
+  }
+  slot.innerHTML = action
+    ? `<button class="status ${cls}" onclick="${action}">${esc(text)}</button>`
+    : `<span class="status ${cls}">${esc(text)}</span>`;
+  const reset = document.getElementById('reset-btn');
+  if (reset) reset.hidden = !editable();
+  const so = document.getElementById('signout-btn');
+  if (so) so.hidden = mode !== 'owner';
+  document.body.classList.toggle('readonly', !editable());
+}
+
+function colorPct(p) {
+  if (p >= 80) return '#00d4aa';
+  if (p >= 50) return '#f5a623';
+  if (p > 0) return '#6c63ff';
+  return '#5c6389';
+}
+
+function weekLabel(w) {
+  const d1 = dayDate(w*7);
+  const d2 = dayDate(Math.min(w*7+6, DAYS.length-1));
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  if (d1.getMonth() === d2.getMonth()) return `${months[d1.getMonth()]} ${d1.getDate()}–${d2.getDate()}`;
+  return `${months[d1.getMonth()]} ${d1.getDate()} – ${months[d2.getMonth()]} ${d2.getDate()}`;
+}
+
+function renderTabs() {
+  const tabs = document.getElementById('week-tabs');
+  let html = '';
+  for (let w = 0; w < TOTAL_WEEKS; w++) {
+    const p = weekPct(w);
+    html += `<div class="wtab ${w===activeWeek?'active':''}" onclick="switchWeek(${w})">
+      W${w+1} · ${weekLabel(w)}
+      <span class="wtab-pct">${p}%</span>
+    </div>`;
+  }
+  tabs.innerHTML = html;
+}
+
+function checkbox(k, sid) {
+  return `<input type="checkbox" id="${sid}" ${isDone(k)?'checked':''} ${editable()?'':'disabled'} onchange="toggleTask('${k}')">`;
+}
+
+function renderMain() {
+  const main = document.getElementById('main');
+  let html = '';
+
+  // Stats
+  const op = overallPct();
+  const totalDone = DAYS.reduce((s,_,i) => s + dayTasks(i).filter(isDone).length, 0);
+  const totalTasks = DAYS.reduce((s,_,i) => s + dayTasks(i).length, 0);
+  const daysDone = DAYS.filter((_,i) => dayPct(i) === 100).length;
+  html += `<div class="stats-row">
+    <div class="stat"><div class="stat-label">Overall</div><div class="stat-value" style="color:${colorPct(op)}">${op}%</div><div class="stat-sub">complete</div></div>
+    <div class="stat"><div class="stat-label">Tasks Done</div><div class="stat-value" style="color:var(--accent2)">${totalDone}</div><div class="stat-sub">of ${totalTasks}</div></div>
+    <div class="stat"><div class="stat-label">Days Done</div><div class="stat-value" style="color:var(--accent)">${daysDone}</div><div class="stat-sub">of ${DAYS.length}</div></div>
+    <div class="stat"><div class="stat-label">Week ${activeWeek+1}</div><div class="stat-value" style="color:var(--warn)">${weekPct(activeWeek)}%</div><div class="stat-sub">this week</div></div>
+  </div>`;
+
+  // Weeks
+  for (let w = 0; w < TOTAL_WEEKS; w++) {
+    html += `<div class="week-panel ${w===activeWeek?'active':''}" id="week-${w}">`;
+    weekDays(w).forEach(i => {
+      if (i >= DAYS.length) return;
+      const d = DAYS[i];
+      if (!d || !d.morning || !d.evening) return;
+      const date = dayDate(i);
+      const today = isToday(date);
+      const pct = dayPct(i);
+      const isOpen = ui.open[i];
+      const subj = SUBJECTS[d.subject] || SUBJECTS.rev;
+      const typeLabel = d.type === 'mock' ? 'MOCK DAY' : d.type === 'revision' ? 'REVISION' : 'STUDY';
+      const typeClass = d.type === 'mock' ? 'type-mock' : d.type === 'revision' ? 'type-revision' : 'type-study';
+
+      html += `<div class="day-card ${pct===100?'completed':''} ${d.type==='revision'||d.type==='mock'?'revision-day':''} ${today?'today':''}">
+        <div class="day-header" onclick="toggleDay(${i})">
+          <div class="day-num" style="background:${subj.bg};color:${subj.color}">D${i+1}</div>
+          <div class="day-meta">
+            <div class="day-date">
+              ${formatDate(date)}
+              ${today?'<span class="today-badge">TODAY</span>':''}
+              <span class="day-type ${typeClass}">${typeLabel}</span>
+            </div>
+            <div class="day-subject">${subj.icon} ${d.type==='revision'?'Revision Session':d.type==='mock'?'Mock Test + Analysis':subj.name}</div>
+          </div>
+          <div class="day-progress">
+            <div class="mini-bar"><div class="mini-fill" style="width:${pct}%;background:${subj.color}"></div></div>
+            <div class="mini-pct" style="color:${colorPct(pct)}">${pct}%</div>
+          </div>
+          <div class="day-chevron ${isOpen?'open':''}">▼</div>
+        </div>
+        <div class="day-tasks ${isOpen?'open':''}">
+          <div class="session-block">
+            <div class="session-title">🌅 Morning Session <span class="session-hrs">8 hrs</span></div>
+            ${d.morning.map((t,j) => {
+              const k = `m_${i}_${j}`;
+              const sid = `cb_${k}`;
+              return `<div class="task-item">
+                <div class="task-cb">${checkbox(k, sid)}<label for="${sid}"></label></div>
+                <div class="task-text" onclick="document.getElementById('${sid}').click()">${t}</div>
+              </div>`;
+            }).join('')}
+          </div>
+          <div class="session-block">
+            <div class="session-title">🌙 Evening Session <span class="session-hrs">4 hrs</span></div>
+            ${d.evening.map((t,j) => {
+              const k = `e_${i}_${j}`;
+              const sid = `cb_${k}`;
+              return `<div class="task-item">
+                <div class="task-cb">${checkbox(k, sid)}<label for="${sid}"></label></div>
+                <div class="task-text" onclick="document.getElementById('${sid}').click()">${t}</div>
+              </div>`;
+            }).join('')}
+          </div>
+          <div class="apt-strip">
+            <div class="apt-cb">
+              ${checkbox(`apt_${i}`, `apt_cb_${i}`)}
+              <label for="apt_cb_${i}"></label>
+            </div>
+            <div class="apt-strip-label">🧩 Aptitude — 30 mins daily (RS Aggarwal / Verbal Reasoning)</div>
+          </div>
+        </div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  main.innerHTML = html;
+  document.getElementById('obar-fill').style.width = op + '%';
+  document.getElementById('opct').textContent = op + '%';
+}
+
+function renderAll() { renderTabs(); renderMain(); renderStatus(); }
+
+function switchWeek(w) {
+  activeWeek = w;
+  renderTabs();
+  renderMain();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function toggleDay(i) {
+  ui.open[i] = !ui.open[i];
+  saveUI(); renderMain();
+}
+function toggleTask(k) {
+  if (!editable()) { renderMain(); return; }
+  const v = !state.done[k];
+  if (v) state.done[k] = true; else delete state.done[k];
+  if (mode === 'owner') { pending[k] = v; persistPending(); }
+  renderMain(); renderTabs();
+  queueSave();
+}
+function resetAll() {
+  if (!editable()) return;
+  if (!confirm('Reset ALL progress?')) return;
+  state.done = {};
+  if (mode === 'owner') { pending = {}; resetSeq++; persistPending(); }
+  renderAll();
+  queueSave(0);
+}
+
+// Auto-open today
+function autoOpenToday() {
+  let found = false;
+  for (let i = 0; i < DAYS.length; i++) {
+    if (isToday(dayDate(i))) {
+      activeWeek = Math.floor(i / 7);
+      ui.open[i] = true;
+      found = true;
+      break;
+    }
+  }
+  // If today not in range, open first incomplete week
+  if (!found) {
+    for (let w = 0; w < TOTAL_WEEKS; w++) {
+      if (weekPct(w) < 100) { activeWeek = w; break; }
+    }
+  }
+}
+
+renderShell();
+autoOpenToday();
+renderAll();
+initPersistence();
+setInterval(renderStatus, 60000);
+</script>
+</body>
+</html>
