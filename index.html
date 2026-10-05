@@ -679,6 +679,308 @@
   }
   .btn:hover { background: #5551e6; }
   .btn:disabled { opacity: 0.6; cursor: default; }
+
+  /* ROADMAP / PHASES */
+  .roadmap-wrap {
+    margin-bottom: 20px;
+    background: var(--surface-card);
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+  .roadmap-title {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .roadmap-phases {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 8px;
+  }
+  .phase-card {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid var(--border-card);
+    border-radius: 8px;
+    padding: 8px 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .phase-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--border-hover);
+    transform: translateY(-1px);
+  }
+  .phase-card.active-phase {
+    border-color: rgba(99, 102, 241, 0.4);
+    background: rgba(99, 102, 241, 0.1);
+  }
+  .phase-name {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .phase-sub {
+    font-size: 0.64rem;
+    color: var(--text3);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .phase-bar {
+    height: 3px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 99px;
+    overflow: hidden;
+    margin-top: 6px;
+  }
+  .phase-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* TODAY'S SPOTLIGHT CARD */
+  .spotlight-card {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(16, 185, 129, 0.08) 50%, rgba(245, 158, 11, 0.08));
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    border-radius: var(--radius-lg);
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    box-shadow: 0 4px 20px -2px rgba(99, 102, 241, 0.15);
+  }
+  .spotlight-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .spotlight-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+  .spotlight-badge {
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--warn);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 2px;
+  }
+  .spotlight-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--text);
+  }
+  .spotlight-desc {
+    font-size: 0.72rem;
+    color: var(--text2);
+    margin-top: 2px;
+  }
+  .spotlight-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .spotlight-stat {
+    text-align: right;
+  }
+  .spotlight-stat-val {
+    font-family: var(--font-mono);
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--accent2);
+  }
+  .spotlight-stat-sub {
+    font-size: 0.65rem;
+    color: var(--text3);
+  }
+
+  /* FILTER BAR */
+  .filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .filter-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-right: 4px;
+  }
+  .filter-chip {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-card);
+    color: var(--text2);
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 99px;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .filter-chip:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text);
+  }
+  .filter-chip.active {
+    background: rgba(99, 102, 241, 0.18);
+    border-color: rgba(99, 102, 241, 0.45);
+    color: #fff;
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.15);
+  }
+
+  /* CHEER WIDGET & PARTICLES */
+  .cheer-btn {
+    background: linear-gradient(135deg, rgba(244, 63, 94, 0.15), rgba(245, 158, 11, 0.15));
+    border: 1px solid rgba(244, 63, 94, 0.35);
+    color: #fecdd3;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 99px;
+    cursor: pointer;
+    transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 0 10px rgba(244, 63, 94, 0.12);
+    user-select: none;
+  }
+  .cheer-btn:hover {
+    background: linear-gradient(135deg, rgba(244, 63, 94, 0.25), rgba(245, 158, 11, 0.25));
+    border-color: rgba(244, 63, 94, 0.6);
+    transform: scale(1.04);
+    box-shadow: 0 0 16px rgba(244, 63, 94, 0.25);
+  }
+  .cheer-btn:active {
+    transform: scale(0.96);
+  }
+  .cheer-badge {
+    font-size: 0.62rem;
+    font-family: var(--font-mono);
+    background: rgba(244, 63, 94, 0.3);
+    padding: 1px 5px;
+    border-radius: 99px;
+  }
+  .cheer-badge:empty { display: none; }
+
+  .floating-particle {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    font-size: 1.5rem;
+    user-select: none;
+    animation: floatUp 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  }
+  @keyframes floatUp {
+    0% {
+      opacity: 1;
+      transform: translate(0, 0) scale(0.6) rotate(0deg);
+    }
+    50% {
+      opacity: 1;
+      transform: translate(var(--tx, 0px), var(--ty, -60px)) scale(1.3) rotate(var(--tr, 15deg));
+    }
+    100% {
+      opacity: 0;
+      transform: translate(calc(var(--tx, 0px) * 1.5), var(--ty2, -120px)) scale(0.9) rotate(calc(var(--tr, 15deg) * 2));
+    }
+  }
+
+  /* ANALYTICS MODAL */
+  .analytics-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 16px 0 20px;
+    max-height: 55vh;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .analytics-row {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid var(--border-card);
+    border-radius: 10px;
+    padding: 10px 14px;
+    transition: all 0.15s;
+    cursor: pointer;
+  }
+  .analytics-row:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--border-hover);
+    transform: translateY(-1px);
+  }
+  .analytics-row-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .analytics-subj {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .analytics-pct {
+    font-size: 0.78rem;
+    font-weight: 800;
+    font-family: var(--font-mono);
+  }
+  .analytics-track {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .analytics-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.4s ease-out;
+  }
+  .analytics-sub {
+    font-size: 0.65rem;
+    color: var(--text3);
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 </style>
 </head>
 <body>
@@ -1238,6 +1540,154 @@ function overallPct() {
 
 const TOTAL_WEEKS = Math.ceil(DAYS.length / 7);
 
+// ─── PHASES ROADMAP ──────────────────────────────────────────────────────
+const PHASES = [
+  { name: 'Phase 1: Foundations', icon: '🎲', label: 'Prob, Stats & Calculus', weekStart: 0, weekEnd: 1 },
+  { name: 'Phase 2: Python & DSA', icon: '💻', label: 'Programming & Data Structures', weekStart: 1, weekEnd: 3 },
+  { name: 'Phase 3: ML & AI', icon: '🤖', label: 'ML Algorithms & Logic/FOL', weekStart: 3, weekEnd: 5 },
+  { name: 'Phase 4: DBMS', icon: '🗄️', label: 'Relational Model, SQL & Storage', weekStart: 5, weekEnd: 7 },
+  { name: 'Phase 5: Mocks & Rev', icon: '🎯', label: 'Full Timed Mocks 1–15', weekStart: 7, weekEnd: 12 }
+];
+
+function phasePct(phase) {
+  let total = 0, done = 0;
+  for (let w = phase.weekStart; w <= phase.weekEnd && w < TOTAL_WEEKS; w++) {
+    weekDays(w).forEach(i => {
+      if (i < DAYS.length) {
+        const tasks = dayTasks(i);
+        total += tasks.length;
+        done += tasks.filter(isDone).length;
+      }
+    });
+  }
+  return total ? Math.round(done / total * 100) : 0;
+}
+
+// ─── SUBJECT ANALYTICS ───────────────────────────────────────────────────
+function subjectStats() {
+  const stats = {};
+  for (const k in SUBJECTS) {
+    stats[k] = { ...SUBJECTS[k], total: 0, done: 0 };
+  }
+  DAYS.forEach((d, i) => {
+    const k = d.subject || 'rev';
+    if (!stats[k]) stats[k] = { name: k, color: '#6366f1', icon: '📌', total: 0, done: 0 };
+    const tasks = dayTasks(i);
+    stats[k].total += tasks.length;
+    stats[k].done += tasks.filter(isDone).length;
+  });
+  return Object.keys(stats).map(k => {
+    const s = stats[k];
+    const pct = s.total ? Math.round(s.done / s.total * 100) : 0;
+    return { key: k, ...s, pct };
+  }).filter(s => s.total > 0);
+}
+
+function openAnalytics() {
+  const modal = document.getElementById('analytics-modal');
+  if (!modal) return;
+  const list = document.getElementById('analytics-list');
+  const stats = subjectStats();
+  list.innerHTML = stats.map(s => `
+    <div class="analytics-row" onclick="filterBySubject('${s.key}')">
+      <div class="analytics-row-header">
+        <span class="analytics-subj">${s.icon} ${esc(s.name)}</span>
+        <span class="analytics-pct" style="color:${s.color}">${s.pct}%</span>
+      </div>
+      <div class="analytics-track">
+        <div class="analytics-fill" style="width:${s.pct}%;background:${s.color}"></div>
+      </div>
+      <div class="analytics-sub">
+        <span>${s.done} of ${s.total} tasks finished</span>
+        <span>${s.total - s.done} remaining</span>
+      </div>
+    </div>
+  `).join('');
+  modal.hidden = false;
+}
+
+function closeAnalytics() {
+  const modal = document.getElementById('analytics-modal');
+  if (modal) modal.hidden = true;
+}
+
+function filterBySubject(subjKey) {
+  closeAnalytics();
+  for (let i = 0; i < DAYS.length; i++) {
+    if (DAYS[i].subject === subjKey) {
+      const w = Math.floor(i / 7);
+      switchWeek(w);
+      ui.open[i] = true;
+      saveUI();
+      renderMain();
+      setTimeout(() => {
+        const el = document.getElementById(`day-${i}`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 50);
+      return;
+    }
+  }
+}
+
+// ─── CHEER & CELEBRATION ─────────────────────────────────────────────────
+let cheerCount = parseInt(lsGet('gate_cheers_sent') || '0', 10);
+
+function playCheerChime() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    const freqs = [523.25, 659.25, 783.99, 1046.50];
+    const freq = freqs[Math.floor(Math.random() * freqs.length)];
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(freq * 1.5, ctx.currentTime + 0.15);
+    gain.gain.setValueAtTime(0.12, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.3);
+  } catch {}
+}
+
+function sendCheer(event) {
+  cheerCount++;
+  lsSet('gate_cheers_sent', cheerCount);
+  playCheerChime();
+  
+  const emojis = ['🎉', '🔥', '💪', '🚀', '👏', '⭐', '💯', '🎯', '✨', '🏆'];
+  const btn = event ? event.currentTarget : document.getElementById('cheer-btn');
+  const rect = btn ? btn.getBoundingClientRect() : { left: window.innerWidth / 2, top: window.innerHeight / 2, width: 0, height: 0 };
+  const originX = rect.left + rect.width / 2;
+  const originY = rect.top + rect.height / 2;
+
+  for (let i = 0; i < 7; i++) {
+    const p = document.createElement('div');
+    p.className = 'floating-particle';
+    p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    p.style.left = `${originX + (Math.random() * 30 - 15)}px`;
+    p.style.top = `${originY + (Math.random() * 20 - 10)}px`;
+    p.style.setProperty('--tx', `${(Math.random() - 0.5) * 120}px`);
+    p.style.setProperty('--ty', `${-(Math.random() * 60 + 50)}px`);
+    p.style.setProperty('--ty2', `${-(Math.random() * 80 + 110)}px`);
+    p.style.setProperty('--tr', `${(Math.random() - 0.5) * 60}deg`);
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 1200);
+  }
+
+  const badge = document.getElementById('cheer-badge');
+  if (badge) badge.textContent = cheerCount > 0 ? cheerCount : '';
+}
+
+// ─── FILTERS ─────────────────────────────────────────────────────────────
+let currentFilter = 'all';
+
+function setFilter(f) {
+  currentFilter = f;
+  renderMain();
+}
+
 // ─── RENDER ──────────────────────────────────────────────────────────────
 function renderShell() {
   document.getElementById('root').innerHTML = `
@@ -1253,6 +1703,10 @@ function renderShell() {
         <div class="obar"><div class="obar-fill" id="obar-fill"></div></div>
         <span class="opct" id="opct">0%</span>
       </div>
+      <button class="nav-btn" onclick="openAnalytics()" title="View subject-wise progress breakdown">📊 Analytics</button>
+      <button class="cheer-btn" id="cheer-btn" onclick="sendCheer(event)" title="Send Deepanshu a cheer!">
+        🔥 Cheer <span class="cheer-badge" id="cheer-badge">${cheerCount > 0 ? cheerCount : ''}</span>
+      </button>
       <button class="nav-btn" onclick="jumpToToday()" title="Jump to today's schedule">🎯 Today</button>
       <button class="nav-btn" onclick="toggleWeekExpand()" title="Expand or collapse all days this week">↕ Toggle Week</button>
       <span id="status-slot"></span>
@@ -1263,6 +1717,23 @@ function renderShell() {
   <div class="week-tabs" id="week-tabs"></div>
 </div>
 <div class="main" id="main"></div>
+
+<!-- ANALYTICS MODAL -->
+<div class="modal-back" id="analytics-modal" hidden onclick="if(event.target===this)closeAnalytics()">
+  <div class="modal" style="max-width:500px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <h2>📊 Subject Breakdown</h2>
+      <button class="reset-btn" onclick="closeAnalytics()">✕</button>
+    </div>
+    <p>Overall completion breakdown across all GATE DA subjects. Click any subject to jump to its lectures.</p>
+    <div class="analytics-grid" id="analytics-list"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn" onclick="closeAnalytics()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN MODAL -->
 <div class="modal-back" id="login" hidden onclick="if(event.target===this)closeLogin()">
   <form class="modal" onsubmit="event.preventDefault();submitLogin()">
     <h2>Owner sign-in</h2>
@@ -1344,6 +1815,84 @@ function formatTaskText(t) {
   return s;
 }
 
+function renderTodaySpotlight() {
+  let todayIndex = -1;
+  for (let i = 0; i < DAYS.length; i++) {
+    if (isToday(dayDate(i))) { todayIndex = i; break; }
+  }
+  const activeIdx = todayIndex >= 0 ? todayIndex : 0;
+  const d = DAYS[activeIdx];
+  if (!d) return '';
+  const date = dayDate(activeIdx);
+  const subj = SUBJECTS[d.subject] || SUBJECTS.rev;
+  const pct = dayPct(activeIdx);
+  const tasks = dayTasks(activeIdx);
+  const doneCount = tasks.filter(isDone).length;
+  const isActualToday = todayIndex >= 0;
+
+  return `
+  <div class="spotlight-card">
+    <div class="spotlight-left">
+      <div class="spotlight-icon" style="background:${subj.bg};color:${subj.color}">${subj.icon}</div>
+      <div>
+        <div class="spotlight-badge">
+          <span class="pulse-dot"></span>
+          ${isActualToday ? "Deepanshu's Focus Today" : "Schedule Spotlight · Day " + (activeIdx+1)}
+        </div>
+        <div class="spotlight-title">Day ${activeIdx+1} · ${esc(d.label || subj.name)}</div>
+        <div class="spotlight-desc">${formatDate(date)} · ${tasks.length} tasks · ${pct === 100 ? '✅ 100% Completed' : doneCount + '/' + tasks.length + ' finished'}</div>
+      </div>
+    </div>
+    <div class="spotlight-right">
+      <div class="spotlight-stat">
+        <div class="spotlight-stat-val">${pct}%</div>
+        <div class="spotlight-stat-sub">Day Completion</div>
+      </div>
+      <button class="nav-btn" onclick="jumpToToday()" style="background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.18)">🎯 View Day ${activeIdx+1}</button>
+    </div>
+  </div>`;
+}
+
+function renderRoadmap() {
+  let html = `<div class="roadmap-wrap">
+    <div class="roadmap-title">
+      <span>🗺️ Preparation Roadmap & Phases</span>
+      <span>Oct 5 → Dec 31</span>
+    </div>
+    <div class="roadmap-phases">`;
+  
+  PHASES.forEach((phase) => {
+    const p = phasePct(phase);
+    const isCurrent = activeWeek >= phase.weekStart && activeWeek <= phase.weekEnd;
+    html += `
+      <div class="phase-card ${isCurrent ? 'active-phase' : ''}" onclick="switchWeek(${phase.weekStart})">
+        <div class="phase-name">
+          <span>${phase.icon} ${esc(phase.name.split(':')[0])}</span>
+          <span style="font-family:var(--font-mono);font-size:0.68rem;color:${p===100?'var(--accent2)':p>0?'var(--accent)':'var(--text3)'}">${p}%</span>
+        </div>
+        <div class="phase-sub">${esc(phase.label)}</div>
+        <div class="phase-bar">
+          <div class="phase-fill" style="width:${p}%;background:${p===100?'var(--accent2)':'var(--accent)'}"></div>
+        </div>
+      </div>`;
+  });
+
+  html += `</div></div>`;
+  return html;
+}
+
+function renderFilterBar() {
+  return `
+  <div class="filter-bar">
+    <span class="filter-label">Filter:</span>
+    <button class="filter-chip ${currentFilter==='all'?'active':''}" onclick="setFilter('all')">All Days</button>
+    <button class="filter-chip ${currentFilter==='today'?'active':''}" onclick="setFilter('today')">🔥 Today</button>
+    <button class="filter-chip ${currentFilter==='completed'?'active':''}" onclick="setFilter('completed')">✅ Completed</button>
+    <button class="filter-chip ${currentFilter==='incomplete'?'active':''}" onclick="setFilter('incomplete')">⏳ Incomplete</button>
+    <button class="filter-chip ${currentFilter==='revision'?'active':''}" onclick="setFilter('revision')">🔁 Revision / Mocks</button>
+  </div>`;
+}
+
 function renderMain() {
   const main = document.getElementById('main');
   let html = '';
@@ -1360,79 +1909,101 @@ function renderMain() {
     <div class="stat"><div class="stat-label">Week ${activeWeek+1} Pace</div><div class="stat-value" style="color:var(--warn)">${weekPct(activeWeek)}%</div><div class="stat-sub">this week's target</div></div>
   </div>`;
 
+  // Spotlight card
+  html += renderTodaySpotlight();
+
+  // Roadmap
+  html += renderRoadmap();
+
+  // Filter bar
+  html += renderFilterBar();
+
   // Weeks
   for (let w = 0; w < TOTAL_WEEKS; w++) {
     html += `<div class="week-panel ${w===activeWeek?'active':''}" id="week-${w}">`;
-    weekDays(w).forEach(i => {
-      if (i >= DAYS.length) return;
-      const d = DAYS[i];
-      if (!d || !d.morning || !d.evening) return;
-      const date = dayDate(i);
-      const today = isToday(date);
-      const pct = dayPct(i);
-      const isOpen = ui.open[i];
-      const subj = SUBJECTS[d.subject] || SUBJECTS.rev;
-      const typeLabel = d.type === 'mock' ? 'MOCK DAY' : d.type === 'revision' ? 'REVISION' : 'STUDY';
-      const typeClass = d.type === 'mock' ? 'type-mock' : d.type === 'revision' ? 'type-revision' : 'type-study';
-
-      html += `<div class="day-card ${pct===100?'completed':''} ${d.type==='revision'||d.type==='mock'?'revision-day':''} ${today?'today':''}" id="day-${i}">
-        <div class="day-header" onclick="toggleDay(${i})">
-          <div class="day-num" style="background:${subj.bg};color:${subj.color};border:1px solid ${subj.color}33">D${i+1}</div>
-          <div class="day-meta">
-            <div class="day-date">
-              <span>${formatDate(date)}</span>
-              ${today?'<span class="today-badge"><span class="pulse-dot"></span>TODAY</span>':''}
-              <span class="day-type ${typeClass}">${typeLabel}</span>
-            </div>
-            <div class="day-subject">${subj.icon} ${d.type==='revision'?'Revision Session':d.type==='mock'?'Mock Test + Analysis':esc(d.label||subj.name)}</div>
-          </div>
-          <div class="day-progress">
-            <div class="mini-bar"><div class="mini-fill" style="width:${pct}%;background:${subj.color}"></div></div>
-            <div class="mini-pct" style="color:${colorPct(pct)}">${pct}%</div>
-          </div>
-          <div class="day-chevron ${isOpen?'open':''}">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-          </div>
-        </div>
-        <div class="day-tasks ${isOpen?'open':''}">
-          <div class="session-block">
-            <div class="session-title">
-              <span>🌅 Morning Session</span>
-              <span class="session-hrs">8 hrs</span>
-            </div>
-            ${d.morning.map((t,j) => {
-              const k = `m_${i}_${j}`;
-              const sid = `cb_${k}`;
-              return `<div class="task-item">
-                <div class="task-cb">${checkbox(k, sid)}<label for="${sid}"></label></div>
-                <div class="task-text" onclick="document.getElementById('${sid}').click()">${formatTaskText(t)}</div>
-              </div>`;
-            }).join('')}
-          </div>
-          <div class="session-block">
-            <div class="session-title">
-              <span>🌙 Evening Session</span>
-              <span class="session-hrs">4 hrs</span>
-            </div>
-            ${d.evening.map((t,j) => {
-              const k = `e_${i}_${j}`;
-              const sid = `cb_${k}`;
-              return `<div class="task-item">
-                <div class="task-cb">${checkbox(k, sid)}<label for="${sid}"></label></div>
-                <div class="task-text" onclick="document.getElementById('${sid}').click()">${formatTaskText(t)}</div>
-              </div>`;
-            }).join('')}
-          </div>
-          <div class="apt-strip">
-            <div class="apt-cb">
-              ${checkbox(`apt_${i}`, `apt_cb_${i}`)}
-              <label for="apt_cb_${i}"></label>
-            </div>
-            <div class="apt-strip-label">🧩 Aptitude — 30 mins daily (RS Aggarwal / Verbal Reasoning)</div>
-          </div>
-        </div>
-      </div>`;
+    const daysInWeek = weekDays(w).filter(i => {
+      if (i >= DAYS.length) return false;
+      if (currentFilter === 'all') return true;
+      if (currentFilter === 'today') return isToday(dayDate(i));
+      if (currentFilter === 'completed') return dayPct(i) === 100;
+      if (currentFilter === 'incomplete') return dayPct(i) < 100;
+      if (currentFilter === 'revision') return DAYS[i].type === 'revision' || DAYS[i].type === 'mock';
+      return true;
     });
+
+    if (daysInWeek.length === 0) {
+      html += `<div style="text-align:center;padding:40px 20px;color:var(--text3);font-size:0.85rem">No days match the "${currentFilter}" filter in Week ${w+1}.</div>`;
+    } else {
+      daysInWeek.forEach(i => {
+        const d = DAYS[i];
+        if (!d || !d.morning || !d.evening) return;
+        const date = dayDate(i);
+        const today = isToday(date);
+        const pct = dayPct(i);
+        const isOpen = ui.open[i];
+        const subj = SUBJECTS[d.subject] || SUBJECTS.rev;
+        const typeLabel = d.type === 'mock' ? 'MOCK DAY' : d.type === 'revision' ? 'REVISION' : 'STUDY';
+        const typeClass = d.type === 'mock' ? 'type-mock' : d.type === 'revision' ? 'type-revision' : 'type-study';
+
+        html += `<div class="day-card ${pct===100?'completed':''} ${d.type==='revision'||d.type==='mock'?'revision-day':''} ${today?'today':''}" id="day-${i}">
+          <div class="day-header" onclick="toggleDay(${i})">
+            <div class="day-num" style="background:${subj.bg};color:${subj.color};border:1px solid ${subj.color}33">D${i+1}</div>
+            <div class="day-meta">
+              <div class="day-date">
+                <span>${formatDate(date)}</span>
+                ${today?'<span class="today-badge"><span class="pulse-dot"></span>TODAY</span>':''}
+                <span class="day-type ${typeClass}">${typeLabel}</span>
+              </div>
+              <div class="day-subject">${subj.icon} ${d.type==='revision'?'Revision Session':d.type==='mock'?'Mock Test + Analysis':esc(d.label||subj.name)}</div>
+            </div>
+            <div class="day-progress">
+              <div class="mini-bar"><div class="mini-fill" style="width:${pct}%;background:${subj.color}"></div></div>
+              <div class="mini-pct" style="color:${colorPct(pct)}">${pct}%</div>
+            </div>
+            <div class="day-chevron ${isOpen?'open':''}">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+          </div>
+          <div class="day-tasks ${isOpen?'open':''}">
+            <div class="session-block">
+              <div class="session-title">
+                <span>🌅 Morning Session</span>
+                <span class="session-hrs">8 hrs</span>
+              </div>
+              ${d.morning.map((t,j) => {
+                const k = `m_${i}_${j}`;
+                const sid = `cb_${k}`;
+                return `<div class="task-item">
+                  <div class="task-cb">${checkbox(k, sid)}<label for="${sid}"></label></div>
+                  <div class="task-text" onclick="document.getElementById('${sid}').click()">${formatTaskText(t)}</div>
+                </div>`;
+              }).join('')}
+            </div>
+            <div class="session-block">
+              <div class="session-title">
+                <span>🌙 Evening Session</span>
+                <span class="session-hrs">4 hrs</span>
+              </div>
+              ${d.evening.map((t,j) => {
+                const k = `e_${i}_${j}`;
+                const sid = `cb_${k}`;
+                return `<div class="task-item">
+                  <div class="task-cb">${checkbox(k, sid)}<label for="${sid}"></label></div>
+                  <div class="task-text" onclick="document.getElementById('${sid}').click()">${formatTaskText(t)}</div>
+                </div>`;
+              }).join('')}
+            </div>
+            <div class="apt-strip">
+              <div class="apt-cb">
+                ${checkbox(`apt_${i}`, `apt_cb_${i}`)}
+                <label for="apt_cb_${i}"></label>
+              </div>
+              <div class="apt-strip-label">🧩 Aptitude — 30 mins daily (RS Aggarwal / Verbal Reasoning)</div>
+            </div>
+          </div>
+        </div>`;
+      });
+    }
     html += `</div>`;
   }
 
