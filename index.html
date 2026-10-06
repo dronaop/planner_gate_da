@@ -989,6 +989,7 @@
 // ── PLAN DATA ──────────────────────────────────────────────────────────────
 const START = new Date('2026-10-05');
 const SUBJECTS = {
+  la:   { name: 'Linear Algebra', color: '#38bdf8', bg: 'rgba(56,189,248,0.12)', icon: '📐' },
   prob: { name: 'Probability & Stats', color: '#00d4aa', bg: 'rgba(0,212,170,0.12)', icon: '🎲' },
   calc: { name: 'Calculus & Optimization', color: '#ff6584', bg: 'rgba(255,101,132,0.12)', icon: '📈' },
   py:   { name: 'Python', color: '#f5a623', bg: 'rgba(245,166,35,0.12)', icon: '🐍' },
@@ -996,6 +997,7 @@ const SUBJECTS = {
   ml:   { name: 'Machine Learning', color: '#a78bfa', bg: 'rgba(167,139,250,0.12)', icon: '🤖' },
   ai:   { name: 'Artificial Intelligence', color: '#34d399', bg: 'rgba(52,211,153,0.12)', icon: '🧠' },
   db:   { name: 'DBMS & Warehousing', color: '#fb923c', bg: 'rgba(251,146,60,0.12)', icon: '🗄️' },
+  apt:  { name: 'Aptitude (daily 30 min)', color: '#facc15', bg: 'rgba(250,204,21,0.12)', icon: '🧩' },
   rev:  { name: 'Revision', color: '#6c63ff', bg: 'rgba(108,99,255,0.12)', icon: '🔁' },
 };
 
@@ -1145,6 +1147,42 @@ const DAYS = [
   { type:'mock', subject:'rev', morning:['🎯 MOCK 15 — Full timed (Dec 31)','Score target: 90+','🎯 DEC 31 TARGET: Consistently 90+ in mocks'], evening:['Analysis','Plan January: 1 mock daily','Prepare error log for January review'] },
 ];
 
+// Linear Algebra Module 1 — finished before the plan started. Shown as a "Pre" week before Oct 5.
+// These days use negative indices (P1 = -3 … P3 = -1) so every tick key from Oct 5 onward stays the same.
+const PRE_DAYS = [
+  { type:'study', subject:'la', label:"Linear Algebra M1 · done before the plan", morning:["LA M1 · 1A. Why Study Linear Algebra (22m)", "LA M1 · 1B. Linear Algebra for GATE & Interviews (14m)", "LA M1 · 1C. Linearly Independent and Linearly Dependent (1h15)", "LA M1 · 2A. Filling the Space Part 1 (44m)", "LA M1 · 2B. Filling the Space Part 2 (28m)", "LA M1 · 2C. Summary so far (12m)", "LA M1 · 2D. Multiplying a Matrix & a Vector (26m)", "LA M1 · Homework 1 — Linear Dependence & Independence (solve) (~45m)", "LA M1 · 3A. Homework 1 Discussion (~30m)", "LA M1 · 3B. Why Solve System of Linear Equations (22m)", "LA M1 · 3C. Writing as Ax=b, Geometric Interpretation, Possible Solutions (24m)", "LA M1 · 3D. Understanding Ax=b Intuitively (44m)", "LA M1 · First LIVE Class: Practice Questions for GATE (All Branches) (~1h30)", "LA M1 · 4A. Multiplying 2 Matrices | Walmart Interview Question (18m)", "LA M1 · 4B. GATE 2016 Question (16m)", "LA M1 · 4C. GATE 2014 Question (14m)", "LA M1 · 4D. Two Conceptual Questions (28m)"], evening:["LA M1 · 4E. Linear Combination of Independent Vectors is Unique (28m)", "LA M1 · 4F. GATE 2017 Question (4m)", "LA M1 · 5A. Echelon Form and Pivot Columns (37m)", "LA M1 · 5B. Gaussian Elimination (26m)", "LA M1 · 5C. Rank | GATE 1994 | Rank Nullity Theorem (11m)", "LA M1 · 5D. Finally Solving Ax=b | Five Different Questions (33m)", "LA M1 · 5E. More than one Free Variable in Ax=0 (32m)", "LA M1 · 6A. GATE 2021 | Free Variables in Non-homogeneous (19m)", "LA M1 · 6B. Solutions based on Rank(A) and Rank(A|b) (18m)", "LA M1 · 6C. Questions on rank(A) and Number of Solutions (8m)", "LA M1 · 6D. LI Columns with Gaussian Elimination (24m)", "LA M1 · 6E. Row Reduced Echelon Form (28m)"], noApt:true },
+  { type:'study', subject:'la', label:"Linear Algebra M1 · done before the plan", morning:["🎯 PYQs (LA): Linear independence, Ax=b, rank & solutions (GATE DA 2024–26 + relevant GATE CSE)", "LA M1 · 7A. Determinant (1h40)", "LA M1 · 7B. Inverse of a Matrix (~40m)", "LA M1 · 7C. Cramer's Rule (26m)", "LA M1 · 8A. Introduction to Eigenvalues and Eigenvectors (23m)", "LA M1 · 8B. Characteristic Equation (15m)", "LA M1 · 8C. Solving for Eigenvalues and Eigenvectors (22m)", "LA M1 · 9A. LI Eigenvectors with Repeating Eigenvalues (21m)", "LA M1 · 9B. Three Examples with Repeating Lambda (30m)", "LA M1 · 9C. Symmetric Matrices have n LI Eigenvectors (12m)", "LA M1 · 9D. Two Magical Properties (12m)", "LA M1 · 10A. Rank and Eigenvalues (22m)", "LA M1 · 10B. Examples on Rank and Eigenvalues (15m)", "LA M1 · 10C. Cayley-Hamilton Theorem (16m)", "LA M1 · 10D. Eigenvalues of AB and BA (32m)", "LA M1 · 10E. Eigenvalues of Powers of A (17m)", "LA M1 · 10F. Three Tough/Interesting GATE PYQs (~30m)", "LA M1 · 10G. Matrix Diagonalization in Brief (15m)"], evening:["LA M1 · More GATE PYQs from all Branches (annotated notes, 75 pages) (~1h00)", "LA M1 · 11A. LU Decomposition (25m)", "LA M1 · 11B. Types of Matrices (1h24)", "LA M1 · LIVE Practice Questions on Linearly Dependent Vectors (1h02)", "LA M1 · LIVE Practice Questions on Solutions of Ax = b (1h01)"], noApt:true },
+  { type:'study', subject:'la', label:"Linear Algebra M1 · done before the plan", morning:["📝 GO Weekly Quiz · Linear Algebra Weekly Quiz + Quiz 4 solutions — attempt + review", "🎯 PYQs (LA): Determinant, eigenvalues & eigenvectors, LU, special matrices (GATE DA 2024–26 + relevant GATE CSE)"], evening:[], noApt:true },
+];
+const PRE = PRE_DAYS.length;
+function getDay(i) { return i < 0 ? PRE_DAYS[PRE + i] : DAYS[i]; }
+const ALL_IDX = Array.from({ length: PRE + DAYS.length }, (_, k) => k - PRE);
+function dayTag(i) { return i < 0 ? 'P' + (PRE + i + 1) : 'D' + (i + 1); }
+const FIRST_WEEK = PRE ? -1 : 0;
+
+// Which course each tick belongs to (for Subject Analytics): read from the task's prefix
+// ("LA M2 · …" → Linear Algebra), so LA tasks count toward LA even on a Python/DSA day.
+// Unprefixed tasks (PYQs, quizzes) belong to the course of the task before them.
+const SUBJ_PREFIX = [[/^(LA M\d|🎯 PYQs \(LA\))/, 'la'], [/^Prob/, 'prob'], [/^Calc/, 'calc'], [/^Python/, 'py'],
+  [/^(DS|Algo):/, 'dsa'], [/^ML\b/, 'ml'], [/^AI\b/, 'ai'], [/^DB/, 'db'], [/^(⏸|Nothing pending)/, 'rev']];
+const TASK_SUBJ = (() => {
+  const out = {}; let cur = null;
+  ALL_IDX.forEach(i => {
+    const d = getDay(i);
+    const walk = (arr, p) => arr.forEach((t, j) => {
+      let k = null;
+      if (d.type === 'study') { for (const [re, key] of SUBJ_PREFIX) if (re.test(t)) { k = key; break; } }
+      else k = 'rev';
+      if (k === null) k = (d.subject === 'la' ? 'la' : cur) || d.subject;
+      else if (k !== 'rev' && k !== 'la') cur = k;
+      out[`${p}_${i}_${j}`] = k;
+    });
+    walk(d.morning, 'm'); walk(d.evening, 'e');
+    if (!d.noApt) out[`apt_${i}`] = 'apt';
+  });
+  return out;
+})();
+
 // ─── STORAGE: your GitHub repo ───────────────────────────────────────────
 // Progress lives in progress.json in the same public repo that serves this
 // page on GitHub Pages. Everyone reads it; only you can write it, using a
@@ -1281,11 +1319,11 @@ function commitMessage(ops, reset) {
   if (reset) return 'Reset progress';
   const keys = Object.keys(ops);
   const on = keys.filter(k => ops[k]).length, off = keys.length - on;
-  const days = [...new Set(keys.map(k => +k.split('_')[1] + 1))].sort((a, b) => a - b);
+  const days = [...new Set(keys.map(k => +k.split('_')[1]))].sort((a, b) => a - b).map(n => n < 0 ? 'P' + (PRE + n + 1) : 'D' + (n + 1));
   const parts = [];
   if (on) parts.push(`ticked ${on}`);
   if (off) parts.push(`unticked ${off}`);
-  return `Progress: ${parts.join(', ')} (D${days.join(', D')})`;
+  return `Progress: ${parts.join(', ')} (${days.join(', ')})`;
 }
 
 // ── Load ──
@@ -1503,12 +1541,12 @@ function timeAgo(ms) {
 
 // ─── PROGRESS ────────────────────────────────────────────────────────────
 function dayTasks(i) {
-  const d = DAYS[i];
+  const d = getDay(i);
   if (!d || !d.morning || !d.evening) return [];
   const tasks = [];
   d.morning.forEach((t,j) => tasks.push(`m_${i}_${j}`));
   d.evening.forEach((t,j) => tasks.push(`e_${i}_${j}`));
-  tasks.push(`apt_${i}`);
+  if (!d.noApt) tasks.push(`apt_${i}`);
   return tasks;
 }
 function dayPct(i) {
@@ -1518,6 +1556,7 @@ function dayPct(i) {
   return Math.round(done / tasks.length * 100);
 }
 function weekDays(w) {
+  if (w < 0) return Array.from({ length: PRE }, (_, k) => k - PRE);
   const start = w * 7, end = Math.min(start + 7, DAYS.length);
   return Array.from({length: end - start}, (_, i) => start + i);
 }
@@ -1530,7 +1569,7 @@ function weekPct(w) {
 }
 function overallPct() {
   let total = 0, done = 0;
-  DAYS.forEach((_, i) => {
+  ALL_IDX.forEach(i => {
     const tasks = dayTasks(i);
     total += tasks.length;
     done += tasks.filter(isDone).length;
@@ -1569,12 +1608,13 @@ function subjectStats() {
   for (const k in SUBJECTS) {
     stats[k] = { ...SUBJECTS[k], total: 0, done: 0 };
   }
-  DAYS.forEach((d, i) => {
-    const k = d.subject || 'rev';
-    if (!stats[k]) stats[k] = { name: k, color: '#6366f1', icon: '📌', total: 0, done: 0 };
-    const tasks = dayTasks(i);
-    stats[k].total += tasks.length;
-    stats[k].done += tasks.filter(isDone).length;
+  ALL_IDX.forEach(i => {
+    dayTasks(i).forEach(t => {
+      const k = TASK_SUBJ[t] || 'rev';
+      if (!stats[k]) stats[k] = { name: k, color: '#6366f1', icon: '📌', total: 0, done: 0 };
+      stats[k].total++;
+      if (isDone(t)) stats[k].done++;
+    });
   });
   return Object.keys(stats).map(k => {
     const s = stats[k];
@@ -1613,20 +1653,18 @@ function closeAnalytics() {
 
 function filterBySubject(subjKey) {
   closeAnalytics();
-  for (let i = 0; i < DAYS.length; i++) {
-    if (DAYS[i].subject === subjKey) {
-      const w = Math.floor(i / 7);
-      switchWeek(w);
-      ui.open[i] = true;
-      saveUI();
-      renderMain();
-      setTimeout(() => {
-        const el = document.getElementById(`day-${i}`);
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 50);
-      return;
-    }
-  }
+  // Jump to the first day that still has an unticked task of this course (or its first day if all done).
+  const has = (i, open) => dayTasks(i).some(t => TASK_SUBJ[t] === subjKey && (!open || !isDone(t)));
+  const i = ALL_IDX.find(i => has(i, true)) ?? ALL_IDX.find(i => has(i, false));
+  if (i === undefined) return;
+  switchWeek(i < 0 ? -1 : Math.floor(i / 7));
+  ui.open[i] = true;
+  saveUI();
+  renderMain();
+  setTimeout(() => {
+    const el = document.getElementById(`day-${i}`);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 50);
 }
 
 // ─── CHEER & CELEBRATION ─────────────────────────────────────────────────
@@ -1784,6 +1822,7 @@ function colorPct(p) {
 }
 
 function weekLabel(w) {
+  if (w < 0) return 'LA M1 · before Oct 5';
   const d1 = dayDate(w*7);
   const d2 = dayDate(Math.min(w*7+6, DAYS.length-1));
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -1794,11 +1833,11 @@ function weekLabel(w) {
 function renderTabs() {
   const tabs = document.getElementById('week-tabs');
   let html = '';
-  for (let w = 0; w < TOTAL_WEEKS; w++) {
+  for (let w = FIRST_WEEK; w < TOTAL_WEEKS; w++) {
     const p = weekPct(w);
     const isComplete = p === 100;
     html += `<div class="wtab ${w===activeWeek?'active':''} ${isComplete?'complete':''}" onclick="switchWeek(${w})">
-      <span>W${w+1} · ${weekLabel(w)}</span>
+      <span>${w < 0 ? 'Pre' : 'W' + (w+1)} · ${weekLabel(w)}</span>
       <span class="wtab-pct">${isComplete ? '✓ 100%' : p + '%'}</span>
     </div>`;
   }
@@ -1899,14 +1938,14 @@ function renderMain() {
 
   // Stats
   const op = overallPct();
-  const totalDone = DAYS.reduce((s,_,i) => s + dayTasks(i).filter(isDone).length, 0);
-  const totalTasks = DAYS.reduce((s,_,i) => s + dayTasks(i).length, 0);
-  const daysDone = DAYS.filter((_,i) => dayPct(i) === 100).length;
+  const totalDone = ALL_IDX.reduce((s,i) => s + dayTasks(i).filter(isDone).length, 0);
+  const totalTasks = ALL_IDX.reduce((s,i) => s + dayTasks(i).length, 0);
+  const daysDone = ALL_IDX.filter(i => dayPct(i) === 100).length;
   html += `<div class="stats-row">
     <div class="stat"><div class="stat-label">Overall Progress</div><div class="stat-value" style="color:${colorPct(op)}">${op}%</div><div class="stat-sub">${totalDone} of ${totalTasks} tasks complete</div></div>
     <div class="stat"><div class="stat-label">Tasks Completed</div><div class="stat-value" style="color:var(--accent2)">${totalDone}</div><div class="stat-sub">${totalTasks - totalDone} remaining</div></div>
-    <div class="stat"><div class="stat-label">Days Finished</div><div class="stat-value" style="color:var(--accent)">${daysDone}</div><div class="stat-sub">of ${DAYS.length} planned days</div></div>
-    <div class="stat"><div class="stat-label">Week ${activeWeek+1} Pace</div><div class="stat-value" style="color:var(--warn)">${weekPct(activeWeek)}%</div><div class="stat-sub">this week's target</div></div>
+    <div class="stat"><div class="stat-label">Days Finished</div><div class="stat-value" style="color:var(--accent)">${daysDone}</div><div class="stat-sub">of ${ALL_IDX.length} planned days</div></div>
+    <div class="stat"><div class="stat-label">${activeWeek < 0 ? 'Pre-plan' : 'Week ' + (activeWeek+1)} Pace</div><div class="stat-value" style="color:var(--warn)">${weekPct(activeWeek)}%</div><div class="stat-sub">this week's target</div></div>
   </div>`;
 
   // Spotlight card
@@ -1919,7 +1958,7 @@ function renderMain() {
   html += renderFilterBar();
 
   // Weeks
-  for (let w = 0; w < TOTAL_WEEKS; w++) {
+  for (let w = FIRST_WEEK; w < TOTAL_WEEKS; w++) {
     html += `<div class="week-panel ${w===activeWeek?'active':''}" id="week-${w}">`;
     const daysInWeek = weekDays(w).filter(i => {
       if (i >= DAYS.length) return false;
@@ -1927,15 +1966,15 @@ function renderMain() {
       if (currentFilter === 'today') return isToday(dayDate(i));
       if (currentFilter === 'completed') return dayPct(i) === 100;
       if (currentFilter === 'incomplete') return dayPct(i) < 100;
-      if (currentFilter === 'revision') return DAYS[i].type === 'revision' || DAYS[i].type === 'mock';
+      if (currentFilter === 'revision') return getDay(i).type === 'revision' || getDay(i).type === 'mock';
       return true;
     });
 
     if (daysInWeek.length === 0) {
-      html += `<div style="text-align:center;padding:40px 20px;color:var(--text3);font-size:0.85rem">No days match the "${currentFilter}" filter in Week ${w+1}.</div>`;
+      html += `<div style="text-align:center;padding:40px 20px;color:var(--text3);font-size:0.85rem">No days match the "${currentFilter}" filter in ${w < 0 ? 'the Pre week' : 'Week ' + (w+1)}.</div>`;
     } else {
       daysInWeek.forEach(i => {
-        const d = DAYS[i];
+        const d = getDay(i);
         if (!d || !d.morning || !d.evening) return;
         const date = dayDate(i);
         const today = isToday(date);
@@ -1947,7 +1986,7 @@ function renderMain() {
 
         html += `<div class="day-card ${pct===100?'completed':''} ${d.type==='revision'||d.type==='mock'?'revision-day':''} ${today?'today':''}" id="day-${i}">
           <div class="day-header" onclick="toggleDay(${i})">
-            <div class="day-num" style="background:${subj.bg};color:${subj.color};border:1px solid ${subj.color}33">D${i+1}</div>
+            <div class="day-num" style="background:${subj.bg};color:${subj.color};border:1px solid ${subj.color}33">${dayTag(i)}</div>
             <div class="day-meta">
               <div class="day-date">
                 <span>${formatDate(date)}</span>
@@ -1993,13 +2032,16 @@ function renderMain() {
                 </div>`;
               }).join('')}
             </div>
-            <div class="apt-strip">
+            ${d.noApt ? '' : `            <div class="apt-strip">
               <div class="apt-cb">
                 ${checkbox(`apt_${i}`, `apt_cb_${i}`)}
                 <label for="apt_cb_${i}"></label>
               </div>
               <div class="apt-strip-label">🧩 Aptitude — 30 mins daily (RS Aggarwal / Verbal Reasoning)</div>
-            </div>
+            
+            `}
+            ${editable() ? `<div style="text-align:right;padding:8px 4px 2px"><button class="filter-chip" onclick="markDay(${i})">${pct === 100 ? '↺ Untick whole day' : '✓ Mark whole day done'}</button></div>` : ''}
+</div>
           </div>
         </div>`;
       });
@@ -2081,6 +2123,19 @@ function toggleTask(k) {
   const v = !state.done[k];
   if (v) state.done[k] = true; else delete state.done[k];
   if (mode === 'owner') { pending[k] = v; persistPending(); }
+  renderMain(); renderTabs();
+  queueSave();
+}
+
+function markDay(i) {
+  if (!editable()) return;
+  const tasks = dayTasks(i);
+  const v = !tasks.every(isDone);
+  tasks.forEach(k => {
+    if (v) state.done[k] = true; else delete state.done[k];
+    if (mode === 'owner') pending[k] = v;
+  });
+  if (mode === 'owner') persistPending();
   renderMain(); renderTabs();
   queueSave();
 }
