@@ -18,7 +18,9 @@
     "e_-3_7": true,
     "e_-3_8": true,
     "e_-3_9": true,
-    "e_15_5": true,
+    "e_15_0": true,
+    "e_15_1": true,
+    "e_15_2": true,
     "e_7_0": true,
     "e_7_1": true,
     "e_7_2": true,
@@ -72,10 +74,19 @@
     "m_15_0": true,
     "m_15_1": true,
     "m_15_2": true,
+    "m_15_3": true,
+    "m_15_4": true,
+    "m_16_0": true,
+    "m_16_1": true,
+    "m_16_2": true,
+    "m_16_3": true,
+    "m_16_4": true,
+    "m_16_5": true,
+    "m_19_0": true,
     "m_7_0": true,
     "m_7_1": true,
     "m_7_2": true,
     "m_7_3": true
   },
-  "updatedAt": 1792570865491
+  "updatedAt": 1792978657560
 }
