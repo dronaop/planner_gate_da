@@ -89,7 +89,7 @@
   body.intro .hc .b { animation: ink 0.42s cubic-bezier(0.2, 0.9, 0.3, 1.25) both; animation-delay: calc(0.15s + var(--n, 0) * 7ms); }
   body.intro-week .week-panel.active .day-card { animation: fadeIn 0.3s ease-out both; }
   .day-tasks.opening { animation: dayOpen 0.28s ease-out; }
-  .task-cb input.pop:checked + label, .apt-cb input.pop:checked + label { animation: checkPop 0.38s cubic-bezier(0.2, 0.9, 0.3, 1.4); }
+  .task-cb input.pop:checked + label { animation: checkPop 0.38s cubic-bezier(0.2, 0.9, 0.3, 1.4); }
   .day-card.flash-highlight { animation: flashRing 1.4s ease-out; }
 
   /* ── Top bar ── */
@@ -130,7 +130,11 @@
   .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
   .status-dot.pulse { animation: pulse 1.2s infinite; }
 
-  .week-tabs { max-width: 1000px; margin: 0 auto; display: flex; gap: 2px; overflow-x: auto; padding: 0 14px; scrollbar-width: none; }
+  .week-tabs {
+    max-width: 1000px; margin: 0 auto; display: flex; gap: 2px; overflow-x: auto; padding: 0 20px; scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 28px, #000 calc(100% - 28px), transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 28px, #000 calc(100% - 28px), transparent);
+  }
   .week-tabs::-webkit-scrollbar { display: none; }
   .wtab {
     flex-shrink: 0; display: flex; align-items: baseline; gap: 6px; cursor: pointer; white-space: nowrap;
@@ -275,8 +279,8 @@
 
   /* Task row: time in the margin, red margin rule, then the box and text */
   .task-item, .break-row { position: relative; padding: 6px 18px 6px 132px; }
-  .task-item::before, .break-row::before, .session-title::before, .apt-strip::before, .today-more::before, .sp-empty::before { content: ''; position: absolute; left: 120px; top: 0; bottom: 0; width: 1.5px; background: var(--margin); }
-  .session-title, .apt-strip, .today-more, .sp-empty { position: relative; }
+  .task-item::before, .break-row::before, .session-title::before, .today-more::before, .sp-empty::before { content: ''; position: absolute; left: 120px; top: 0; bottom: 0; width: 1.5px; background: var(--margin); }
+  .session-title, .today-more, .sp-empty { position: relative; }
   .task-item { display: flex; align-items: flex-start; gap: 10px; transition: background 0.12s; }
   .task-item:hover { background: color-mix(in srgb, var(--hl) 14%, transparent); }
   .task-time { position: absolute; left: 0; top: 8px; width: 112px; text-align: right; font-size: 0.7rem; color: var(--ink-3); line-height: 1.3; white-space: nowrap; }
@@ -284,29 +288,36 @@
   .task-item:has(.task-incl), .break-row:has(.task-incl) { min-height: 50px; }
   .task-text { font-size: 0.9rem; line-height: 1.5; cursor: pointer; min-width: 0; }
   .task-item:has(input:checked) .task-text { color: var(--ink-3); text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--ink-3) 70%, transparent); }
-  .task-dur { font-size: 0.75rem; color: var(--ink-3); margin-left: 4px; }
+  .task-dur { font-size: 0.75rem; color: var(--ink-3); margin-left: 4px; white-space: nowrap; }
+  /* Today only: slot already over (red time) and the slot running now (marked row) */
+  .task-item:not(:has(input:checked)) .task-time.late { color: var(--red); }
+  .task-item:not(:has(input:checked)):has(.task-time.now) { background: color-mix(in srgb, var(--hl) 20%, transparent); }
+  .task-item:not(:has(input:checked)) .task-time.now { color: var(--ink); font-weight: 600; }
+  .task-item:not(:has(input:checked)) .task-time.now::before { content: ''; display: inline-block; width: 6px; height: 6px; margin-right: 5px; border-radius: 50%; background: var(--red); vertical-align: 1px; }
+  /* where the time has its own line there's room for a word */
+  .side-panel .task-item:not(:has(input:checked)) .task-time.now::before { content: 'now'; width: auto; height: auto; margin-right: 6px; padding: 0 5px; border-radius: 3px; color: var(--sheet); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+  .sp-late { color: var(--red); }
   .course-chip, .kind-chip { display: inline-block; font-size: 0.7rem; font-weight: 600; padding: 0 5px; border-radius: 3px; margin-right: 6px; vertical-align: 1px; white-space: nowrap; }
   .kind-chip { border: 1px solid currentColor; padding: 0 4px; }
   .kind-pyq { color: var(--s-calc); }
   .kind-test { color: var(--red); }
   .kind-quiz { color: var(--s-dsa); }
   .kind-buf { color: var(--ink-2); }
-  .task-cb input, .apt-cb input { display: none; }
-  .task-cb label, .apt-cb label {
+  .kind-apt { color: var(--s-apt); }
+  .task-cb input { display: none; }
+  .task-cb label {
     flex-shrink: 0; width: 18px; height: 18px; margin-top: 2px; border-radius: 3px; border: 1.5px solid var(--ink-2);
     display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.12s, border-color 0.12s;
   }
-  .task-cb label:hover, .apt-cb label:hover { border-color: var(--ink); }
-  .task-cb input:checked + label, .apt-cb input:checked + label { background: var(--done); border-color: var(--done); }
-  .task-cb input:checked + label::after, .apt-cb input:checked + label::after { content: ''; width: 5px; height: 9px; border: solid var(--sheet); border-width: 0 2px 2px 0; transform: translate(0, -1px) rotate(45deg); }
-  body.readonly .task-cb label, body.readonly .apt-cb label, body.readonly .task-text { cursor: default; }
+  .task-cb label:hover { border-color: var(--ink); }
+  .task-cb input:checked + label { background: var(--done); border-color: var(--done); }
+  .task-cb input:checked + label::after { content: ''; width: 5px; height: 9px; border: solid var(--sheet); border-width: 0 2px 2px 0; transform: translate(0, -1px) rotate(45deg); }
+  body.readonly .task-cb label, body.readonly .task-text { cursor: default; }
   .break-row { font-size: 0.78rem; color: var(--ink-3); font-style: italic; min-height: 28px; }
   .break-row .task-time { font-style: normal; top: 7px; }
   .break-row.free { color: var(--ink-2); }
   .break-row.end { color: var(--done); font-style: normal; font-weight: 500; }
-  .apt-strip { display: flex; align-items: flex-start; gap: 10px; padding: 9px 18px 9px 132px; border-top: 1px dashed var(--rule); }
-  .apt-strip-label { font-size: 0.86rem; color: var(--ink); }
-  .apt-strip-label .task-time { top: 11px; }
+  .break-row.slipped { padding-top: 14px; padding-bottom: 14px; }
 
   /* Footer */
   .foot { margin-top: 30px; text-align: center; font-size: 0.76rem; color: var(--ink-2); line-height: 2; }
@@ -420,7 +431,12 @@
     body { font-size: 14px; }
     .header { padding: 10px 14px 8px; }
     .header-brand p { display: none; }
-    .hright { flex-wrap: nowrap; overflow-x: auto; width: 100%; scrollbar-width: none; padding-bottom: 2px; }
+    .hright {
+      flex-wrap: nowrap; overflow-x: auto; width: calc(100% + 14px); margin-right: -14px; padding: 0 28px 2px 0; scrollbar-width: none;
+      -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 36px), transparent);
+      mask-image: linear-gradient(90deg, #000 calc(100% - 36px), transparent);
+    }
+    .week-tabs { padding: 0 14px; }
     .hright::-webkit-scrollbar { display: none; }
     .main { padding: 16px 12px 56px; }
     .today-page { padding: 20px 16px 16px; }
@@ -439,12 +455,14 @@
     .day-count, .mini-bar { display: none; }
     .insight-btn .lbl { display: none; }
     .sp-head { padding: 0 14px 10px; }
-    .task-item, .break-row, .apt-strip, .session-title, .today-more, .sp-empty,
+    .task-item, .break-row, .session-title, .today-more, .sp-empty,
     .side-panel .today-list .task-item, .side-panel .today-more { padding-left: 26px; padding-right: 12px; }
-    .task-item::before, .break-row::before, .session-title::before, .apt-strip::before, .today-more::before, .sp-empty::before,
+    .task-item::before, .break-row::before, .session-title::before, .today-more::before, .sp-empty::before,
     .side-panel .today-list .task-item::before, .side-panel .today-more::before { left: 14px; }
     .task-item { flex-wrap: wrap; }
-    .task-time, .side-panel .task-time { position: static; display: block; width: auto; text-align: left; margin-bottom: 1px; }
+    /* inline-block so a done task's strike-through doesn't run through its time */
+    .task-time, .side-panel .task-time { position: static; display: inline-block; width: 100%; text-align: left; margin-bottom: 1px; }
+    .task-item:not(:has(input:checked)) .task-time.now::before { content: 'now'; width: auto; height: auto; margin-right: 6px; padding: 0 5px; border-radius: 3px; color: var(--sheet); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
     .task-incl { display: inline; margin-left: 6px; }
     .task-item:has(.task-incl), .break-row:has(.task-incl) { min-height: 0; }
     .task-text { flex: 1; }
@@ -1055,7 +1073,18 @@ function estHours(t) {
 const DAY_START = 6 * 60;
 const BREAKS = [[8 * 60, 8 * 60 + 30, '☕ Breakfast'], [12 * 60 + 30, 13 * 60 + 30, '🍛 Lunch + short rest'], [16 * 60 + 30, 17 * 60, '🚶 Tea + walk'], [20 * 60 + 30, 21 * 60 + 15, '🍽 Dinner']];
 const SLEEP_AT = 22 * 60 + 30;
-function clock(m) { const H = Math.floor(m / 60), h = H % 24, mm = String(m % 60).padStart(2, '0'); return `${((h + 11) % 12) + 1}:${mm} ${h < 12 ? 'am' : 'pm'}${H >= 24 ? ' (after midnight)' : ''}`; }
+function clock(m) { const H = Math.floor(m / 60), h = H % 24, mm = String(m % 60).padStart(2, '0'); return `${((h + 11) % 12) + 1}:${mm} ${h < 12 ? 'am' : 'pm'}${H >= 24 ? ' (after midnight)' : ''}`; }
+function nowMin() { const n = new Date(); return n.getHours() * 60 + n.getMinutes(); }
+// Clock time when `hours` of work started at `from` would end, skipping the fixed breaks.
+function finishFrom(from, hours) {
+  let cur = Math.max(from, DAY_START), left = Math.round(hours * 60);
+  while (left > 0) {
+    for (const [a, b] of BREAKS) if (cur >= a && cur < b) cur = b;
+    const nb = BREAKS.find(([a]) => a > cur), c = Math.min(left, (nb ? nb[0] : Infinity) - cur);
+    cur += c; left -= c;
+  }
+  return cur;
+}
 // Lay the day's tasks one after another from 6:00 am, skipping the fixed breaks. Mocks / full papers are pinned to 2:30 pm (the DA slot).
 const _tl = {};
 function dayTimeline(i) {
@@ -1076,7 +1105,10 @@ function dayTimeline(i) {
   if (d) { d.morning.forEach((t, j) => place(`m_${i}_${j}`, t, estHours(t))); d.evening.forEach((t, j) => place(`e_${i}_${j}`, t, estHours(t))); if (!d.noApt && !out[`apt_${i}`]) place(`apt_${i}`, '', 0.5); }
   out._end = cur; return (_tl[i] = out);
 }
-function timeChip(i, k) { const x = dayTimeline(i)[k]; if (!x || x.end === x.start) return ''; return `<span class="task-time">${clock(x.start)}–${clock(x.end)}${x.inside.length ? `<span class="task-incl">incl. ${x.inside.map(b => b.split(' ')[1].toLowerCase()).join(', ')}</span>` : ''}</span>`; }
+function timeChip(i, k) {
+  const x = dayTimeline(i)[k]; if (!x || x.end === x.start) return '';
+  const m = isToday(dayDate(i)) ? nowMin() : -1, when = m < 0 ? '' : x.end <= m ? ' late' : x.start <= m ? ' now' : '';
+  return `<span class="task-time${when}"${when === ' late' ? ' title="This slot is over"' : ''}>${clock(x.start)}–${clock(x.end)}${x.inside.length ? `<span class="task-incl">incl. ${x.inside.map(b => b.split(' ')[1].toLowerCase()).join(', ')}</span>` : ''}</span>`; }
 // Break / free-time rows to show between two tasks.
 function gapRows(from, to) {
   let html = '';
@@ -1085,24 +1117,28 @@ function gapRows(from, to) {
   if (free >= 20) html += `<div class="break-row free"><span class="task-time"></span>🛋 Free / buffer until ${clock(to)} (rest before the paper, or finish leftovers)</div>`;
   return html;
 }
+function taskRow(i, k, pre) {
+  const sid = pre + k;
+  return `<div class="task-item">
+      <div class="task-cb">${checkbox(k, sid)}<label for="${sid}"></label></div>
+      <div class="task-text" onclick="document.getElementById('${sid}').click()">${timeChip(i, k)}${renderTask(taskTextOf(k), k)}</div>
+    </div>`;
+}
+// Rows for one session, with breaks in the gaps. The aptitude slot is drawn where the timeline put it.
 function taskRows(i, arr, p, prevEnd) {
-  const tl = dayTimeline(i); let html = '', last = prevEnd;
+  const tl = dayTimeline(i), ak = `apt_${i}`, ap = tl[ak]; let html = '', last = prevEnd, apt = false;
   arr.forEach((t, j) => {
-    const k = `${p}_${i}_${j}`, sid = `cb_${k}`, x = tl[k];
+    const k = `${p}_${i}_${j}`, x = tl[k];
     if (x && last !== null && x.start > last) {
-      const ap = tl[`apt_${i}`];
-      if (ap && ap.start >= last && ap.end <= x.start) html += gapRows(last, ap.start) + `<div class="break-row"><span class="task-time">${clock(ap.start)}–${clock(ap.end)}</span>🧩 Aptitude, 30 min (details and tick in the strip below)</div>` + gapRows(ap.end, x.start);
+      if (ap && ap.start >= last && ap.end <= x.start) { html += gapRows(last, ap.start) + taskRow(i, ak, 'cb_') + gapRows(ap.end, x.start); apt = true; }
       else html += gapRows(last, x.start);
     }
-    html += `<div class="task-item">
-      <div class="task-cb">${checkbox(k, sid)}<label for="${sid}"></label></div>
-      <div class="task-text" onclick="document.getElementById('${sid}').click()">${timeChip(i, k)}${renderTask(t, k)}</div>
-    </div>`;
+    html += taskRow(i, k, 'cb_');
     if (x) last = x.end;
   });
-  return { html, last };
+  return { html, last, apt };
 }
-function fmtH(h) { if (!h) return ''; const r = Math.round(h * 2) / 2; return '~' + (r % 1 ? r.toFixed(1) : r) + ' h'; }
+function fmtH(h) { if (!h) return ''; const r = Math.round(h * 2) / 2; return '~' + (r % 1 ? r.toFixed(1) : r) + ' h'; }
 function sessionHours(arr) { return arr.reduce((a, t) => a + estHours(t), 0); }
 function taskTextOf(k) {
   const [p, i, j] = k.split('_'); const d = getDay(+i);
@@ -1114,7 +1150,8 @@ function renderTask(t, key) {
   const sk = TASK_SUBJ[key]; const subj = SUBJECTS[sk];
   let chip = '', body = t;
   let mm;
-  if ((mm = t.match(/^📝 GO Test Series · (.*)$/))) { chip = `<span class="kind-chip kind-test">Test</span>`; body = mm[1]; }
+  if ((mm = t.match(/^🧩 Aptitude(?: \(([^)]*)\))?: (.*)$/))) { chip = `<span class="kind-chip kind-apt">Aptitude</span>`; body = mm[2] + (mm[1] ? ` (${mm[1]})` : ''); }
+  else if ((mm = t.match(/^📝 GO Test Series · (.*)$/))) { chip = `<span class="kind-chip kind-test">Test</span>`; body = mm[1]; }
   else if ((mm = t.match(/^🎯 PYQs(?: \(LA\))?: (.*)$/))) { chip = `<span class="kind-chip kind-pyq">PYQs</span>`; body = mm[1]; }
   else if ((mm = t.match(/^📝 GO Weekly Quiz · (.*)$/))) { chip = `<span class="kind-chip kind-quiz">Quiz</span>`; body = mm[1]; }
   else if ((mm = t.match(/^✍️ (.*)$/))) { chip = `<span class="kind-chip kind-quiz">Notes</span>`; body = mm[1]; }
@@ -1377,6 +1414,14 @@ function ring(p, color, size, inner) {
   </svg><div class="ring-in">${inner}</div></div>`;
 }
 
+// "Starting now, …" for today's open work: when it ends, and how much spills past bedtime.
+function finishLine(leftH) {
+  if (nowMin() >= SLEEP_AT) return ` It's past ${clock(SLEEP_AT)}: sleep, and move what's left to the Sunday buffer.`;
+  const fin = finishFrom(nowMin(), leftH), over = fin - SLEEP_AT;
+  if (over < 15) return ` Starting now, it's done by about <b>${clock(fin)}</b>.`;
+  return ` Starting now, it runs to about <b>${clock(fin).replace(' (after midnight)', '')}</b>, so move <b>${fmtH(over / 60).replace('~', '')}</b> to the Sunday buffer.`;
+}
+
 function renderHero() {
   const op = overallPct();
   const totalDone = ALL_IDX.reduce((s, i) => s + dayTasks(i).filter(isDone).length, 0);
@@ -1398,7 +1443,7 @@ function renderHero() {
       : names.length ? names.slice(0, -1).join(', ') + (names.length > 1 ? ' and ' : '') + names[names.length - 1] : 'a light day';
     const status = !tasks.length ? '' : done === tasks.length ? ' Everything is ticked.'
       : ` <b>${done} of ${tasks.length}</b> tasks done, about <b>${fmtH(leftH).replace('~', '')}</b> left.`;
-    lede = `Day ${t + 1} of the plan: ${esc(what)}.${status}`;
+    lede = `Day ${t + 1} of the plan: ${esc(what)}.${status}${leftH ? finishLine(leftH) : ''}`;
   }
   const kicker = owner
     ? `${part}, Deepanshu.`
@@ -1490,7 +1535,7 @@ function renderInsights(intro) {
   if (!tasks.length) note = `<div class="ip-note">This day slipped. Its tasks were moved to later days, so there's nothing to tick here.</div>`;
   else if (pct === 100) note = `<div class="ip-note good">🎉 Every task on this day is done.</div>`;
   else if (ahead < 0) note = `<div class="ip-note warn">⚠️ ${tasks.length - done.length} task${tasks.length - done.length === 1 ? '' : 's'} (${fmtH(planH - doneH) || 'under 1 h'}) still open from this day. Clear them in the next buffer slot.</div>`;
-  else if (today) note = `<div class="ip-note">📍 Today: ${fmtH(planH - doneH) || 'under 1 h'} of work left. Planned finish ${clock(tl._end)}.</div>`;
+  else if (today) note = `<div class="ip-note${nowMin() >= SLEEP_AT || finishFrom(nowMin(), planH - doneH) - SLEEP_AT >= 15 ? ' warn' : ''}">📍 Today: ${fmtH(planH - doneH) || 'under 1 h'} of work left (planned finish ${clock(tl._end)}).${finishLine(planH - doneH)}</div>`;
   else note = `<div class="ip-note">🗓 Coming up in ${ahead} day${ahead === 1 ? '' : 's'}: ${fmtH(planH)} planned, finishing around ${clock(tl._end)}.</div>`;
 
   let html = `<div class="ip-top">
@@ -1555,8 +1600,7 @@ function renderInsights(intro) {
 
     const open = tasks.filter(k => !isDone(k)), shown = open.slice(0, 5);
     if (shown.length) html += `<div class="ip-sec"><div class="ip-sec-title"><span>▶ Up next</span><span>${open.length} open</span></div><div class="today-list" style="margin-top:0">
-      ${shown.map(k => `<div class="task-item"><div class="task-cb">${checkbox(k, 'ip_' + k)}<label for="ip_${k}"></label></div>
-        <div class="task-text" onclick="document.getElementById('ip_${k}').click()">${timeChip(i, k)}${k.startsWith('apt_') ? formatTaskText(aptText(i)) : renderTask(taskTextOf(k), k)}</div></div>`).join('')}
+      ${shown.map(k => taskRow(i, k, 'ip_')).join('')}
       ${open.length > shown.length ? `<div class="today-more">+ ${open.length - shown.length} more in the full day view</div>` : ''}
     </div></div>`;
   }
@@ -1860,19 +1904,17 @@ function renderTodaySpotlight() {
   const t = todayIndex();
   if (t === null) return '';
   const tasks = dayTasks(t), open = tasks.filter(k => !isDone(k)), shown = open.slice(0, 5);
+  const tl = dayTimeline(t), m = nowMin(), late = open.filter(k => tl[k] && tl[k].end <= m).length;
   return `<section class="spotlight-card">
     <div class="sp-head">
-      <h3>Up next today<span class="sp-meta">${tasks.length - open.length} of ${tasks.length} done</span></h3>
+      <h3>Up next today<span class="sp-meta">${tasks.length - open.length} of ${tasks.length} done${late ? ` · <span class="sp-late">${late} past ${late === 1 ? 'its' : 'their'} slot</span>` : ''}</span></h3>
       <div class="sp-actions">
         <button class="nav-btn" onclick="openInsights(${t})">Day insights</button>
         <button class="nav-btn" onclick="jumpToDay(${t})">Open full day</button>
       </div>
     </div>
     <div class="today-list">
-      ${shown.map(k => `<div class="task-item">
-        <div class="task-cb">${checkbox(k, 'sp_' + k)}<label for="sp_${k}"></label></div>
-        <div class="task-text" onclick="document.getElementById('sp_${k}').click()">${timeChip(t, k)}${k.startsWith('apt_') ? formatTaskText(aptText(t)) : renderTask(taskTextOf(k), k)}</div>
-      </div>`).join('')}
+      ${shown.map(k => taskRow(t, k, 'sp_')).join('')}
       ${open.length > shown.length ? `<div class="today-more">${open.length - shown.length} more on today's page below</div>` : ''}
       ${!tasks.length ? `<div class="sp-empty">Nothing planned today.</div>` : !open.length ? `<div class="sp-empty">Everything on today's list is ticked.</div>` : ''}
     </div>
@@ -1984,10 +2026,14 @@ function renderMain() {
             </div>
           </div>
           <div class="day-tasks ${isOpen?'open':''} ${justOpened===i?'opening':''}">
-            ${!d.morning.length && !d.evening.length ? `<div class="session-block"><div class="task-text" style="color:var(--text3)">Nothing to do here: this day slipped and its tasks moved forward.</div></div>` : ''}
+            ${!d.morning.length && !d.evening.length ? `<div class="break-row slipped">Nothing to do here: this day slipped and its tasks moved forward.</div>` : ''}
             ${(() => {
               const tl = dayTimeline(i);
               const M = taskRows(i, d.morning, 'm', DAY_START), E = taskRows(i, d.evening, 'e', M.last);
+              const ap = tl[`apt_${i}`];
+              // Aptitude placed after the last task (no notes block to sit before): add it to the last session
+              const aptTail = d.noApt || M.apt || E.apt ? '' : (ap && E.last !== null && ap.start > E.last ? gapRows(E.last, ap.start) : '') + taskRow(i, `apt_${i}`, 'cb_');
+              if (d.evening.length) E.html += aptTail; else M.html += aptTail;
               const rangeOf = (arr, p) => { const xs = arr.map((_, j) => tl[`${p}_${i}_${j}`]).filter(Boolean); return xs.length ? `${clock(xs[0].start)} → ${clock(xs[xs.length - 1].end)}` : ''; };
               return `
             <div class="session-block" style="${d.morning.length ? '' : 'display:none'}">
@@ -2004,13 +2050,6 @@ function renderMain() {
               </div>
               ${E.html}
             </div>`; })()}
-            ${d.noApt ? '' : `            <div class="apt-strip">
-              <div class="apt-cb">
-                ${checkbox(`apt_${i}`, `apt_cb_${i}`)}
-                <label for="apt_cb_${i}"></label>
-              </div>
-              <div class="apt-strip-label">${timeChip(i, `apt_${i}`)}${formatTaskText(aptText(i))}</div>
-            </div>`}
             ${dayTasks(i).length ? `<div class="break-row end"><span class="task-time">${clock(dayTimeline(i)._end)}</span>✅ Day done${dayTimeline(i)._end > SLEEP_AT ? ' (running late: trim the last task, protect sleep)' : '. Wind down, no screens; sleep by 10:30 pm for the 6:00 am start'}</div>` : ''}
             ${editable() && dayTasks(i).length ? `<div style="text-align:right;padding:8px 4px 2px"><button class="filter-chip" onclick="markDay(${i})">${pct === 100 ? '↺ Untick whole day' : '✓ Mark whole day done'}</button></div>` : ''}
           </div>
@@ -2140,6 +2179,13 @@ renderAll();
 scrollActiveTabIntoView();
 initPersistence();
 setInterval(renderStatus, 60000);
+// Keep "now" / past-slot marks current; at midnight move to the new day.
+let shownDate = new Date().toDateString();
+setInterval(() => {
+  if (document.visibilityState !== 'visible') return;
+  if (new Date().toDateString() !== shownDate) { shownDate = new Date().toDateString(); autoOpenToday(); saveUI(); renderAll(); scrollActiveTabIntoView(); }
+  else renderMain();
+}, 5 * 60 * 1000);
 </script>
 </body>
 </html>
