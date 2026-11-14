@@ -417,6 +417,48 @@
   .analytics-fill { height: 100%; }
   .analytics-sub { display: flex; justify-content: space-between; font-size: 0.74rem; color: var(--ink-2); margin-top: 4px; }
 
+  /* ── PYQs & Tests Directory Modal ── */
+  .wtab.wtab-special { border-left: 1px solid var(--rule); margin-left: 6px; padding-left: 12px; font-weight: 600; color: var(--done); }
+  .wtab.wtab-special:hover { color: var(--ink); border-bottom-color: var(--done); }
+  .pyq-modal { max-width: 860px; width: 95%; max-height: 88vh; display: flex; flex-direction: column; padding: 22px 24px 18px; }
+  .pyq-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 6px; gap: 12px; }
+  .pyq-header h2 { margin-bottom: 2px; font-size: 1.3rem; }
+  .pyq-header p { font-size: 0.84rem; color: var(--ink-2); margin-bottom: 0; }
+  .pyq-kpi-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin: 10px 0 12px; }
+  .pyq-kpi-card { background: color-mix(in srgb, var(--rule) 25%, var(--sheet)); border: 1px solid var(--rule); border-radius: 4px; padding: 8px 10px; }
+  .pyq-kpi-num { font-family: var(--font-c); font-weight: 700; font-size: 1.15rem; color: var(--ink); line-height: 1.1; }
+  .pyq-kpi-lbl { font-size: 0.68rem; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
+  .pyq-kpi-bar-mini { height: 3px; background: var(--rule); border-radius: 2px; margin-top: 5px; overflow: hidden; }
+  .pyq-kpi-fill { height: 100%; transition: width 0.3s ease; }
+
+  .pyq-controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; padding: 8px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); margin-bottom: 10px; }
+  .pyq-tabs-group { display: flex; flex-wrap: wrap; gap: 4px; }
+  .pyq-chip { font-family: var(--font-c); font-size: 0.76rem; font-weight: 600; padding: 4px 9px; border-radius: 4px; border: 1px solid var(--rule); background: transparent; color: var(--ink-2); cursor: pointer; transition: all 0.12s; white-space: nowrap; }
+  .pyq-chip:hover { color: var(--ink); border-color: var(--ink-2); }
+  .pyq-chip.active { background: var(--ink); color: var(--sheet); border-color: var(--ink); }
+
+  .pyq-filters-group { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .pyq-select { font-family: inherit; font-size: 0.78rem; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); cursor: pointer; }
+  .pyq-search { font-family: inherit; font-size: 0.78rem; padding: 5px 10px; border-radius: 4px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); min-width: 160px; }
+  .pyq-search:focus, .pyq-select:focus { outline: none; border-color: var(--done); }
+
+  .pyq-list { display: flex; flex-direction: column; gap: 6px; overflow-y: auto; flex: 1; min-height: 200px; max-height: 52vh; padding-right: 4px; }
+  .pyq-row { display: flex; align-items: flex-start; gap: 10px; padding: 9px 10px; border: 1px solid var(--rule); border-radius: 4px; background: color-mix(in srgb, var(--sheet) 85%, var(--paper)); transition: background 0.12s; }
+  .pyq-row:hover { background: color-mix(in srgb, var(--hl) 12%, var(--sheet)); }
+  .pyq-row.done { opacity: 0.75; }
+  .pyq-row.done .pyq-row-title { text-decoration: line-through; color: var(--ink-3); }
+  .pyq-row-body { flex: 1; min-width: 0; }
+  .pyq-row-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 5px 7px; margin-bottom: 4px; font-size: 0.72rem; }
+  .pyq-badge { display: inline-flex; align-items: center; font-weight: 600; padding: 1px 6px; border-radius: 3px; font-size: 0.69rem; }
+  .pyq-badge-week { background: color-mix(in srgb, var(--ink) 10%, transparent); color: var(--ink); font-weight: 700; font-family: var(--font-c); }
+  .pyq-badge-date { color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .pyq-badge-day { background: color-mix(in srgb, var(--done) 14%, transparent); color: var(--done); font-weight: 700; font-family: var(--font-c); }
+  .pyq-badge-session { color: var(--ink-3); font-size: 0.67rem; }
+  .pyq-row-title { font-size: 0.88rem; line-height: 1.4; color: var(--ink); }
+  .pyq-jump-btn { flex-shrink: 0; font-size: 0.72rem; font-weight: 600; color: var(--ink-2); background: transparent; border: 1px solid var(--rule); border-radius: 3px; padding: 4px 7px; cursor: pointer; white-space: nowrap; margin-top: 2px; }
+  .pyq-jump-btn:hover { color: var(--ink); border-color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
+  .pyq-empty { text-align: center; padding: 36px 16px; color: var(--ink-3); font-size: 0.86rem; }
+
   /* ── Toasts, confetti, cheer ── */
   .toasts { position: fixed; right: 16px; bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); z-index: 300; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; pointer-events: none; }
   .toast { pointer-events: auto; max-width: min(360px, calc(100vw - 32px)); font-size: 0.86rem; font-weight: 500; color: var(--sheet); background: var(--ink); border-radius: 6px; padding: 10px 14px; box-shadow: var(--shadow); animation: toastIn 0.25s ease-out; }
@@ -467,6 +509,11 @@
     .task-item:has(.task-incl), .break-row:has(.task-incl) { min-height: 0; }
     .task-text { flex: 1; }
     .break-row { display: flex; flex-direction: column; }
+    .pyq-modal { padding: 16px 14px 14px; max-height: 92vh; width: 100%; }
+    .pyq-kpi-bar { grid-template-columns: 1fr 1fr; }
+    .pyq-controls { flex-direction: column; align-items: stretch; gap: 8px; }
+    .pyq-filters-group { width: 100%; }
+    .pyq-search { flex: 1; min-width: 120px; }
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; animation-delay: 0s !important; transition-duration: 0.01ms !important; }
@@ -1303,6 +1350,281 @@ function filterBySubject(subjKey) {
   }, 50);
 }
 
+// ─── PYQS & TESTS DIRECTORY ──────────────────────────────────────────────
+let pyqFilter = { type: 'all', subject: 'all', status: 'all', search: '' };
+
+function getPyqAndTestItems() {
+  const items = [];
+  ALL_IDX.forEach(i => {
+    const d = getDay(i);
+    if (!d) return;
+    const w = i < 0 ? -1 : Math.floor(i / 7);
+    const date = dayDate(i);
+    const dateStr = formatDate(date);
+    const tag = dayTag(i);
+
+    const checkTask = (t, key, sessionName) => {
+      if (/Mock \d+ analysis/i.test(t) || /GATE DA 20\d\d analysis/i.test(t)) return;
+
+      let type = null;
+      let typeLabel = '';
+      let chipClass = '';
+
+      if (/^🎯\s*MOCK/i.test(t) || /GATE DA 20\d\d paper again/i.test(t)) {
+        type = 'mock';
+        typeLabel = 'Mock Test';
+        chipClass = 'kind-test';
+      } else if (/^📝\s*GO Test Series/i.test(t) || /Topic (Wise )?Test/i.test(t) || /Rapid Fire Test/i.test(t)) {
+        type = 'test';
+        typeLabel = 'Topic / Subject Test';
+        chipClass = 'kind-test';
+      } else if (/^📝\s*GO Weekly Quiz/i.test(t) || /Weekly Quiz/i.test(t)) {
+        type = 'quiz';
+        typeLabel = 'Weekly Quiz';
+        chipClass = 'kind-quiz';
+      } else if (/^(🎯|📘)\s*PYQ/i.test(t) || /PYQ warm-up/i.test(t) || /Solve 10 PYQs/i.test(t) || /20 easy PYQs/i.test(t) || (/GATE PYQ/i.test(t) && !/finish anything|Catch up|Re-solve every wrong/i.test(t))) {
+        type = 'pyq';
+        typeLabel = 'PYQ';
+        chipClass = 'kind-pyq';
+      }
+
+      if (type) {
+        const subjKey = TASK_SUBJ[key] || d.subject || 'rev';
+        const subj = SUBJECTS[subjKey] || SUBJECTS.rev;
+        items.push({
+          key,
+          dayIndex: i,
+          dayTag: tag,
+          week: w,
+          weekLabel: w < 0 ? 'Pre-plan' : `Week ${w + 1}`,
+          date: dateStr,
+          rawDate: date,
+          session: sessionName,
+          type,
+          typeLabel,
+          chipClass,
+          subjKey,
+          subjName: subj.name,
+          subjIcon: subj.icon,
+          subjColor: subj.color,
+          subjBg: subj.bg,
+          text: t
+        });
+      }
+    };
+
+    (d.morning || []).forEach((t, j) => checkTask(t, `m_${i}_${j}`, 'Morning'));
+    (d.evening || []).forEach((t, j) => checkTask(t, `e_${i}_${j}`, 'Evening'));
+  });
+
+  return items;
+}
+
+function openPyqTests() {
+  const modal = document.getElementById('pyq-tests-modal');
+  if (!modal) return;
+  populatePyqSubjectFilter();
+  renderPyqTests();
+  modal.hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+
+function closePyqTests() {
+  const modal = document.getElementById('pyq-tests-modal');
+  if (modal) modal.hidden = true;
+  document.body.style.overflow = '';
+}
+
+function populatePyqSubjectFilter() {
+  const sel = document.getElementById('pyq-subject-filter');
+  if (!sel || sel.dataset.populated) return;
+  const items = getPyqAndTestItems();
+  const subjs = {};
+  items.forEach(it => { if (it.subjKey) subjs[it.subjKey] = true; });
+  let opts = '<option value="all">All Subjects</option>';
+  for (const k of Object.keys(SUBJECTS)) {
+    if (subjs[k]) {
+      const s = SUBJECTS[k];
+      opts += `<option value="${k}">${s.icon} ${esc(s.name)}</option>`;
+    }
+  }
+  sel.innerHTML = opts;
+  sel.dataset.populated = 'true';
+}
+
+function setPyqFilter(filterName, value) {
+  pyqFilter[filterName] = value;
+  renderPyqTests();
+}
+
+function renderPyqTests() {
+  const allItems = getPyqAndTestItems();
+  const pyqs = allItems.filter(x => x.type === 'pyq');
+  const quizzes = allItems.filter(x => x.type === 'quiz');
+  const tests = allItems.filter(x => x.type === 'test');
+  const mocks = allItems.filter(x => x.type === 'mock');
+
+  const countDone = arr => arr.filter(x => isDone(x.key)).length;
+  const pct = (d, t) => t ? Math.round(d / t * 100) : 0;
+
+  // KPI Bar
+  const kpiEl = document.getElementById('pyq-kpi-bar');
+  if (kpiEl) {
+    const totalDone = countDone(allItems);
+    const pyqDone = countDone(pyqs);
+    const testDone = countDone(tests) + countDone(quizzes);
+    const mockDone = countDone(mocks);
+    const totalTests = tests.length + quizzes.length;
+
+    kpiEl.innerHTML = `
+      <div class="pyq-kpi-card">
+        <div class="pyq-kpi-num">${totalDone} <span style="font-size:0.8rem;color:var(--ink-3)">/ ${allItems.length}</span></div>
+        <div class="pyq-kpi-lbl">Total Done (${pct(totalDone, allItems.length)}%)</div>
+        <div class="pyq-kpi-bar-mini"><div class="pyq-kpi-fill" style="width:${pct(totalDone, allItems.length)}%;background:var(--done)"></div></div>
+      </div>
+      <div class="pyq-kpi-card">
+        <div class="pyq-kpi-num">${pyqDone} <span style="font-size:0.8rem;color:var(--ink-3)">/ ${pyqs.length}</span></div>
+        <div class="pyq-kpi-lbl">🎯 PYQs (${pct(pyqDone, pyqs.length)}%)</div>
+        <div class="pyq-kpi-bar-mini"><div class="pyq-kpi-fill" style="width:${pct(pyqDone, pyqs.length)}%;background:var(--s-calc)"></div></div>
+      </div>
+      <div class="pyq-kpi-card">
+        <div class="pyq-kpi-num">${testDone} <span style="font-size:0.8rem;color:var(--ink-3)">/ ${totalTests}</span></div>
+        <div class="pyq-kpi-lbl">📝 Quizzes & Tests (${pct(testDone, totalTests)}%)</div>
+        <div class="pyq-kpi-bar-mini"><div class="pyq-kpi-fill" style="width:${pct(testDone, totalTests)}%;background:var(--s-dsa)"></div></div>
+      </div>
+      <div class="pyq-kpi-card">
+        <div class="pyq-kpi-num">${mockDone} <span style="font-size:0.8rem;color:var(--ink-3)">/ ${mocks.length}</span></div>
+        <div class="pyq-kpi-lbl">🏁 Full Mocks (${pct(mockDone, mocks.length)}%)</div>
+        <div class="pyq-kpi-bar-mini"><div class="pyq-kpi-fill" style="width:${pct(mockDone, mocks.length)}%;background:var(--red)"></div></div>
+      </div>
+    `;
+  }
+
+  // Type tabs
+  const tabsEl = document.getElementById('pyq-type-tabs');
+  if (tabsEl) {
+    const active = pyqFilter.type;
+    tabsEl.innerHTML = `
+      <button class="pyq-chip ${active === 'all' ? 'active' : ''}" onclick="setPyqFilter('type', 'all')">All (${allItems.length})</button>
+      <button class="pyq-chip ${active === 'pyq' ? 'active' : ''}" onclick="setPyqFilter('type', 'pyq')">🎯 PYQs (${pyqs.length})</button>
+      <button class="pyq-chip ${active === 'quiz' ? 'active' : ''}" onclick="setPyqFilter('type', 'quiz')">📝 Quizzes (${quizzes.length})</button>
+      <button class="pyq-chip ${active === 'test' ? 'active' : ''}" onclick="setPyqFilter('type', 'test')">🧪 Tests (${tests.length})</button>
+      <button class="pyq-chip ${active === 'mock' ? 'active' : ''}" onclick="setPyqFilter('type', 'mock')">🏁 Mocks (${mocks.length})</button>
+    `;
+  }
+
+  renderPyqList(allItems);
+}
+
+function renderPyqList(allItems) {
+  if (!allItems) allItems = getPyqAndTestItems();
+  const listEl = document.getElementById('pyq-list');
+  const countEl = document.getElementById('pyq-count-info');
+  if (!listEl) return;
+
+  const f = pyqFilter;
+  const q = (f.search || '').trim().toLowerCase();
+
+  const filtered = allItems.filter(item => {
+    if (f.type !== 'all' && item.type !== f.type) return false;
+    if (f.subject !== 'all' && item.subjKey !== f.subject) return false;
+    const done = isDone(item.key);
+    if (f.status === 'open' && done) return false;
+    if (f.status === 'done' && !done) return false;
+    if (q) {
+      const matchText = (item.text || '').toLowerCase();
+      const matchWeek = (item.weekLabel || '').toLowerCase();
+      const matchDate = (item.date || '').toLowerCase();
+      const matchTag = (item.dayTag || '').toLowerCase();
+      const matchSubj = (item.subjName || '').toLowerCase();
+      if (!matchText.includes(q) && !matchWeek.includes(q) && !matchDate.includes(q) && !matchTag.includes(q) && !matchSubj.includes(q)) {
+        return false;
+      }
+    }
+    return true;
+  });
+
+  if (!filtered.length) {
+    listEl.innerHTML = `<div class="pyq-empty">No PYQs or tests match your active filters.</div>`;
+  } else {
+    listEl.innerHTML = filtered.map(item => {
+      const done = isDone(item.key);
+      return `
+        <div class="pyq-row ${done ? 'done' : ''}" id="pyq_row_${item.key}">
+          <div class="task-cb">
+            <input type="checkbox" id="pyq_cb_${item.key}" ${done ? 'checked' : ''} ${editable() ? '' : 'disabled'} onchange="togglePyqTask('${item.key}')">
+            <label for="pyq_cb_${item.key}"></label>
+          </div>
+          <div class="pyq-row-body">
+            <div class="pyq-row-meta">
+              <span class="pyq-badge pyq-badge-week">${esc(item.weekLabel)}</span>
+              <span class="pyq-badge pyq-badge-date">📅 ${esc(item.date)}</span>
+              <span class="pyq-badge pyq-badge-day">${esc(item.dayTag)}</span>
+              <span class="course-chip" style="background:${item.subjBg};color:${item.subjColor}">${item.subjIcon} ${esc(item.subjName)}</span>
+              <span class="pyq-badge-session">${esc(item.session)}</span>
+            </div>
+            <div class="pyq-row-title">${renderTask(item.text, item.key)}</div>
+          </div>
+          <button class="pyq-jump-btn" onclick="jumpToDayAndClose(${item.dayIndex})" title="Jump to ${item.dayTag} in planner">Go to day →</button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  if (countEl) {
+    const doneFiltered = filtered.filter(x => isDone(x.key)).length;
+    countEl.textContent = `Showing ${filtered.length} of ${allItems.length} items (${doneFiltered} completed)`;
+  }
+}
+
+function togglePyqTask(k) {
+  toggleTask(k);
+  const row = document.getElementById(`pyq_row_${k}`);
+  if (row) row.classList.toggle('done', isDone(k));
+  const allItems = getPyqAndTestItems();
+  const pyqs = allItems.filter(x => x.type === 'pyq');
+  const quizzes = allItems.filter(x => x.type === 'quiz');
+  const tests = allItems.filter(x => x.type === 'test');
+  const mocks = allItems.filter(x => x.type === 'mock');
+  const countDone = arr => arr.filter(x => isDone(x.key)).length;
+  const pct = (d, t) => t ? Math.round(d / t * 100) : 0;
+  const totalDone = countDone(allItems);
+  const pyqDone = countDone(pyqs);
+  const testDone = countDone(tests) + countDone(quizzes);
+  const mockDone = countDone(mocks);
+  const totalTests = tests.length + quizzes.length;
+  const kpiEl = document.getElementById('pyq-kpi-bar');
+  if (kpiEl) {
+    kpiEl.innerHTML = `
+      <div class="pyq-kpi-card">
+        <div class="pyq-kpi-num">${totalDone} <span style="font-size:0.8rem;color:var(--ink-3)">/ ${allItems.length}</span></div>
+        <div class="pyq-kpi-lbl">Total Done (${pct(totalDone, allItems.length)}%)</div>
+        <div class="pyq-kpi-bar-mini"><div class="pyq-kpi-fill" style="width:${pct(totalDone, allItems.length)}%;background:var(--done)"></div></div>
+      </div>
+      <div class="pyq-kpi-card">
+        <div class="pyq-kpi-num">${pyqDone} <span style="font-size:0.8rem;color:var(--ink-3)">/ ${pyqs.length}</span></div>
+        <div class="pyq-kpi-lbl">🎯 PYQs (${pct(pyqDone, pyqs.length)}%)</div>
+        <div class="pyq-kpi-bar-mini"><div class="pyq-kpi-fill" style="width:${pct(pyqDone, pyqs.length)}%;background:var(--s-calc)"></div></div>
+      </div>
+      <div class="pyq-kpi-card">
+        <div class="pyq-kpi-num">${testDone} <span style="font-size:0.8rem;color:var(--ink-3)">/ ${totalTests}</span></div>
+        <div class="pyq-kpi-lbl">📝 Quizzes & Tests (${pct(testDone, totalTests)}%)</div>
+        <div class="pyq-kpi-bar-mini"><div class="pyq-kpi-fill" style="width:${pct(testDone, totalTests)}%;background:var(--s-dsa)"></div></div>
+      </div>
+      <div class="pyq-kpi-card">
+        <div class="pyq-kpi-num">${mockDone} <span style="font-size:0.8rem;color:var(--ink-3)">/ ${mocks.length}</span></div>
+        <div class="pyq-kpi-lbl">🏁 Full Mocks (${pct(mockDone, mocks.length)}%)</div>
+        <div class="pyq-kpi-bar-mini"><div class="pyq-kpi-fill" style="width:${pct(mockDone, mocks.length)}%;background:var(--red)"></div></div>
+      </div>
+    `;
+  }
+}
+
+function jumpToDayAndClose(i) {
+  closePyqTests();
+  jumpToDay(i);
+}
+
 // ─── CHEER & CELEBRATION ─────────────────────────────────────────────────
 let cheerCount = parseInt(lsGet('gate_cheers_sent') || '0', 10);
 
@@ -1757,6 +2079,8 @@ document.addEventListener('keydown', e => {
   }
   const an = document.getElementById('analytics-modal');
   if (an && !an.hidden) { if (e.key === 'Escape') closeAnalytics(); return; }
+  const pm = document.getElementById('pyq-tests-modal');
+  if (pm && !pm.hidden) { if (e.key === 'Escape') closePyqTests(); return; }
   const lg = document.getElementById('login');
   if (lg && !lg.hidden) { if (e.key === 'Escape') closeLogin(); return; }
   if (e.key === 'ArrowLeft' && activeWeek > FIRST_WEEK) switchWeek(activeWeek - 1);
@@ -1764,6 +2088,7 @@ document.addEventListener('keydown', e => {
   else if (e.key === 't' || e.key === 'T') jumpToToday();
   else if (e.key === 'i' || e.key === 'I') openInsights(todayIndex() ?? 0);
   else if (e.key === 'a' || e.key === 'A') openAnalytics();
+  else if (e.key === 'p' || e.key === 'P') openPyqTests();
   else return;
   e.preventDefault();
 });
@@ -1784,6 +2109,7 @@ function renderShell() {
         <span class="opct" id="opct">0%</span>
       </div>
       <button class="nav-btn" onclick="openAnalytics()" title="View subject-wise progress breakdown">Analytics</button>
+      <button class="nav-btn" onclick="openPyqTests()" title="View all PYQs & Tests Directory">🎯 PYQs & Tests</button>
       <button class="cheer-btn" id="cheer-btn" onclick="sendCheer(event)" title="Send Deepanshu a cheer!">
         🔥 Cheer <span class="cheer-badge" id="cheer-badge">${cheerCount > 0 ? cheerCount : ''}</span>
       </button>
@@ -1813,6 +2139,39 @@ function renderShell() {
     <div class="analytics-grid" id="analytics-list"></div>
     <div class="modal-actions">
       <button type="button" class="btn" onclick="closeAnalytics()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- PYQS & TESTS DIRECTORY MODAL -->
+<div class="modal-back" id="pyq-tests-modal" hidden onclick="if(event.target===this)closePyqTests()">
+  <div class="modal pyq-modal">
+    <div class="pyq-header">
+      <div>
+        <h2>🎯 PYQs & Test Series Directory</h2>
+        <p>All PYQs, weekly quizzes, topic tests, and full mock tests organized by week, date, and subject.</p>
+      </div>
+      <button class="reset-btn" onclick="closePyqTests()" title="Close (Esc)" style="font-size:1.1rem;padding:4px 8px">✕</button>
+    </div>
+    <div id="pyq-kpi-bar" class="pyq-kpi-bar"></div>
+    <div class="pyq-controls">
+      <div class="pyq-tabs-group" id="pyq-type-tabs"></div>
+      <div class="pyq-filters-group">
+        <select id="pyq-subject-filter" class="pyq-select" onchange="setPyqFilter('subject', this.value)">
+          <option value="all">All Subjects</option>
+        </select>
+        <select id="pyq-status-filter" class="pyq-select" onchange="setPyqFilter('status', this.value)">
+          <option value="all">All Status</option>
+          <option value="open">⏳ Pending only</option>
+          <option value="done">✅ Completed</option>
+        </select>
+        <input type="search" id="pyq-search-box" class="pyq-search" placeholder="Search topics, tests..." oninput="setPyqFilter('search', this.value)" onkeydown="if(event.key==='Escape'){event.stopPropagation();closePyqTests();}">
+      </div>
+    </div>
+    <div class="pyq-list" id="pyq-list"></div>
+    <div class="modal-actions" style="margin-top:10px;justify-content:space-between;align-items:center">
+      <span style="font-size:0.75rem;color:var(--ink-3)" id="pyq-count-info"></span>
+      <button type="button" class="btn" onclick="closePyqTests()">Close</button>
     </div>
   </div>
 </div>
@@ -1887,6 +2246,9 @@ function renderTabs() {
       <span class="wtab-pct">${isComplete ? '✓ 100%' : p + '%'}</span>
     </div>`;
   }
+  html += `<div class="wtab wtab-special" onclick="openPyqTests()" title="View all PYQs & Tests Directory">
+    <span>🎯 PYQs & Tests</span>
+  </div>`;
   tabs.innerHTML = html;
 }
 
@@ -2059,7 +2421,7 @@ function renderMain() {
     html += `</div>`;
   }
 
-  html += `<div class="foot">Shortcuts: <kbd>←</kbd> <kbd>→</kbd> weeks · <kbd>T</kbd> today · <kbd>I</kbd> today's insights · <kbd>A</kbd> analytics · swipe sideways on your phone to change week</div>`;
+  html += `<div class="foot">Shortcuts: <kbd>←</kbd> <kbd>→</kbd> weeks · <kbd>T</kbd> today · <kbd>I</kbd> today's insights · <kbd>A</kbd> analytics · <kbd>P</kbd> PYQs & tests · swipe sideways on your phone to change week</div>`;
 
   main.innerHTML = html;
   justOpened = null;
