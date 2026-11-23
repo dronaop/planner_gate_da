@@ -1,0 +1,23 @@
+# Sensitive YouTube & Instagram Credentials
+client_secret.json
+youtube_token.json
+insta_session.json
+.env
+
+# Video Clipping Pipeline (Everything in one place & ignored)
+clip_pipeline/
+
+# Video exports & large binaries
+youtube-clips/
+*.mp4
+*.webm
+*.mov
+*.part
+
+# Virtual environments
+venv/
+.agents/
+skills-lock.json
+
+# OS files
+.DS_Store
