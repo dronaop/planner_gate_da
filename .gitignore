@@ -9,6 +9,7 @@ clip_pipeline/
 
 # Video exports & large binaries
 youtube-clips/
+temp_scratch/
 *.mp4
 *.webm
 *.mov
