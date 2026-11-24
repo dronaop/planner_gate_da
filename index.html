@@ -459,6 +459,24 @@
   .pyq-jump-btn:hover { color: var(--ink); border-color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
   .pyq-empty { text-align: center; padding: 36px 16px; color: var(--ink-3); font-size: 0.86rem; }
 
+  /* ── Marks & Remark fields for PYQs/Tests ── */
+  .pyq-row-extra { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 6px; }
+  .pyq-marks-wrap { display: inline-flex; align-items: center; gap: 4px; }
+  .pyq-marks-label { font-size: 0.72rem; font-weight: 600; color: var(--ink-2); }
+  .pyq-marks-input { width: 60px; padding: 3px 6px; font: inherit; font-size: 0.78rem; color: var(--ink); background: var(--paper); border: 1px solid var(--rule); border-radius: 3px; text-align: center; }
+  .pyq-marks-input:focus { outline: none; border-color: var(--done); box-shadow: 0 0 0 2px color-mix(in srgb, var(--done) 18%, transparent); }
+  .pyq-marks-input::placeholder { color: var(--ink-3); font-size: 0.72rem; }
+  .pyq-remark-wrap { flex: 1; min-width: 180px; display: flex; align-items: center; gap: 4px; }
+  .pyq-remark-label { font-size: 0.72rem; font-weight: 600; color: var(--ink-2); white-space: nowrap; }
+  .pyq-remark-input { flex: 1; padding: 3px 6px; font: inherit; font-size: 0.78rem; color: var(--ink); background: var(--paper); border: 1px solid var(--rule); border-radius: 3px; }
+  .pyq-remark-input:focus { outline: none; border-color: var(--done); box-shadow: 0 0 0 2px color-mix(in srgb, var(--done) 18%, transparent); }
+  .pyq-remark-input::placeholder { color: var(--ink-3); font-size: 0.72rem; }
+  /* Inline badges on day-view task rows for PYQs/Tests */
+  .task-marks-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 0.68rem; font-weight: 600; padding: 1px 5px; border-radius: 3px; background: color-mix(in srgb, var(--done) 12%, transparent); color: var(--done); margin-left: 6px; vertical-align: 1px; }
+  .task-remark-link { display: inline-flex; align-items: center; gap: 2px; font-size: 0.68rem; color: var(--ink-2); margin-left: 4px; vertical-align: 1px; text-decoration: none; cursor: pointer; }
+  .task-remark-link:hover { color: var(--done); }
+  .task-remark-text { display: inline; font-size: 0.68rem; color: var(--ink-3); margin-left: 4px; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: 1px; }
+
   /* ── Toasts, confetti, cheer ── */
   .toasts { position: fixed; right: 16px; bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); z-index: 300; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; pointer-events: none; }
   .toast { pointer-events: auto; max-width: min(360px, calc(100vw - 32px)); font-size: 0.86rem; font-weight: 500; color: var(--sheet); background: var(--ink); border-radius: 6px; padding: 10px 14px; box-shadow: var(--shadow); animation: toastIn 0.25s ease-out; }
@@ -778,7 +796,7 @@ let token = lsGet(TOKEN_KEY) || '';
 let remote = loadCache();         // last progress.json seen { done, updatedAt }
 let pending = {};                 // taskKey -> true / false, not yet committed
 let resetSeq = 0, savedResetSeq = 0;
-let state = { done: { ...remote.done }, updatedAt: remote.updatedAt };
+let state = { done: { ...remote.done }, marks: { ...remote.marks }, remarks: { ...remote.remarks }, updatedAt: remote.updatedAt };
 let saving = false, saveTimer = null, saveError = '', saveAction = '', loadError = '';
 let lastFetch = 0, retryDelay = 5000;
 
@@ -803,7 +821,11 @@ function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'
 function normalize(s) {
   const done = {};
   if (s && s.done && typeof s.done === 'object') for (const k in s.done) if (s.done[k]) done[k] = true;
-  return { done, updatedAt: (s && typeof s.updatedAt === 'number') ? s.updatedAt : null };
+  const marks = {};
+  if (s && s.marks && typeof s.marks === 'object') for (const k in s.marks) if (s.marks[k] !== '' && s.marks[k] != null) marks[k] = String(s.marks[k]);
+  const remarks = {};
+  if (s && s.remarks && typeof s.remarks === 'object') for (const k in s.remarks) if (s.remarks[k]) remarks[k] = String(s.remarks[k]);
+  return { done, marks, remarks, updatedAt: (s && typeof s.updatedAt === 'number') ? s.updatedAt : null };
 }
 function loadCache() { try { return normalize(JSON.parse(lsGet(CACHE_KEY))); } catch { return normalize(null); } }
 function saveCache(s) { lsSet(CACHE_KEY, JSON.stringify(s)); }
@@ -832,7 +854,7 @@ function restorePending() {
 function withPending(base) {
   const done = resetSeq > savedResetSeq ? {} : { ...base.done };
   for (const k in pending) { if (pending[k]) done[k] = true; else delete done[k]; }
-  return { done, updatedAt: base.updatedAt };
+  return { done, marks: { ...base.marks }, remarks: { ...base.remarks }, updatedAt: base.updatedAt };
 }
 
 // ── GitHub Contents API ──
@@ -943,7 +965,7 @@ async function saveNow() {
       for (const k in ops) { if (ops[k]) done[k] = true; else delete done[k]; }
       const sorted = {};
       Object.keys(done).sort().forEach(k => { sorted[k] = true; });
-      const next = { done: sorted, updatedAt: Date.now() };
+      const next = { done: sorted, marks: state.marks || {}, remarks: state.remarks || {}, updatedAt: Date.now() };
       const body = { message: commitMessage(ops, reset), content: b64encode(JSON.stringify(next, null, 2) + '\n') };
       if (cur.sha) body.sha = cur.sha;
       if (CONFIG.branch) body.branch = CONFIG.branch;
@@ -993,7 +1015,7 @@ function tokenRejected() {
   mode = 'viewer'; saving = false;
   saveError = hasPending() ? 'Token expired · sign in to save' : 'Token expired · sign in again';
   saveAction = 'openLogin()';
-  state = { done: { ...remote.done }, updatedAt: remote.updatedAt };
+  state = { done: { ...remote.done }, marks: { ...remote.marks }, remarks: { ...remote.remarks }, updatedAt: remote.updatedAt };
   ready = true;
   renderAll();
 }
@@ -1044,7 +1066,7 @@ function signOut() {
   token = ''; lsDel(TOKEN_KEY);
   clearTimeout(saveTimer);
   mode = 'viewer'; saveError = ''; saveAction = '';
-  state = { done: { ...remote.done }, updatedAt: remote.updatedAt };
+  state = { done: { ...remote.done }, marks: { ...remote.marks }, remarks: { ...remote.remarks }, updatedAt: remote.updatedAt };
   renderAll();
 }
 
@@ -1059,7 +1081,7 @@ async function initPersistence() {
         const v3 = JSON.parse(lsGet(OLD_LOCAL_KEY)) || {};
         const done = {};
         Object.keys(v3).forEach(k => { if (v3[k] && !k.startsWith('open_day_')) done[k] = true; });
-        state = { done, updatedAt: null };
+        state = { done, marks: {}, remarks: {}, updatedAt: null };
       }
     } catch {}
     mode = 'local'; ready = true;
@@ -1216,7 +1238,18 @@ function renderTask(t, key) {
   else if ((mm = t.match(/^([^·]{2,32}?) · (.*)$/)) && subj && sk !== 'rev') {
     chip = `<span class="course-chip" style="background:${subj.bg};color:${subj.color}">${esc(mm[1])}</span>`; body = mm[2];
   }
-  return chip + formatTaskText(body);
+  let result = chip + formatTaskText(body);
+  // Show inline marks/remark badges for PYQ/test tasks in day view
+  if (key && isPyqOrTest(t)) {
+    const m = getMarks(key), r = getRemark(key);
+    if (m) result += `<span class="task-marks-badge">📊 ${esc(m)}</span>`;
+    if (r) {
+      const isUrl = /^https?:\/\//i.test(r);
+      if (isUrl) result += `<a class="task-remark-link" href="${esc(r)}" target="_blank" rel="noopener" title="${esc(r)}" onclick="event.stopPropagation()">🔗 Result</a>`;
+      else result += `<span class="task-remark-text" title="${esc(r)}">💬 ${esc(r)}</span>`;
+    }
+  }
+  return result;
 }
 function daySubjects(i) {
   const seen = []; dayTasks(i).forEach(k => { const x = TASK_SUBJ[k]; if (x && x !== 'rev' && x !== 'apt' && !seen.includes(x)) seen.push(x); });
@@ -1559,10 +1592,14 @@ function renderPyqList(allItems) {
   } else {
     listEl.innerHTML = filtered.map(item => {
       const done = isDone(item.key);
+      const marksVal = esc(getMarks(item.key));
+      const remarkVal = esc(getRemark(item.key));
+      const ek = esc(item.key);
+      const canEdit = editable();
       return `
         <div class="pyq-row ${done ? 'done' : ''}" id="pyq_row_${item.key}">
           <div class="task-cb">
-            <input type="checkbox" id="pyq_cb_${item.key}" ${done ? 'checked' : ''} ${editable() ? '' : 'disabled'} onchange="togglePyqTask('${item.key}')">
+            <input type="checkbox" id="pyq_cb_${item.key}" ${done ? 'checked' : ''} ${canEdit ? '' : 'disabled'} onchange="togglePyqTask('${item.key}')">
             <label for="pyq_cb_${item.key}"></label>
           </div>
           <div class="pyq-row-body">
@@ -1574,6 +1611,16 @@ function renderPyqList(allItems) {
               <span class="pyq-badge-session">${esc(item.session)}</span>
             </div>
             <div class="pyq-row-title">${renderTask(item.text, item.key)}</div>
+            <div class="pyq-row-extra">
+              <div class="pyq-marks-wrap">
+                <span class="pyq-marks-label">Marks:</span>
+                <input type="text" class="pyq-marks-input" placeholder="e.g. 18/30" value="${marksVal}" ${canEdit ? '' : 'disabled'} onchange="setMarks('${ek}', this.value)" />
+              </div>
+              <div class="pyq-remark-wrap">
+                <span class="pyq-remark-label">Remark:</span>
+                <input type="text" class="pyq-remark-input" placeholder="Paste result link or analysis notes…" value="${remarkVal}" ${canEdit ? '' : 'disabled'} onchange="setRemark('${ek}', this.value)" />
+              </div>
+            </div>
           </div>
           <button class="pyq-jump-btn" onclick="jumpToDayAndClose(${item.dayIndex})" title="Jump to ${item.dayTag} in planner">Go to day →</button>
         </div>
@@ -1633,6 +1680,32 @@ function togglePyqTask(k) {
 function jumpToDayAndClose(i) {
   closePyqTests();
   jumpToDay(i);
+}
+
+// ── Marks & Remark helpers ──
+function setMarks(k, val) {
+  if (!editable()) return;
+  if (!state.marks) state.marks = {};
+  val = val.trim();
+  if (val) state.marks[k] = val; else delete state.marks[k];
+  queueSave();
+}
+function setRemark(k, val) {
+  if (!editable()) return;
+  if (!state.remarks) state.remarks = {};
+  val = val.trim();
+  if (val) state.remarks[k] = val; else delete state.remarks[k];
+  queueSave();
+}
+function getMarks(k) { return (state.marks && state.marks[k]) || ''; }
+function getRemark(k) { return (state.remarks && state.remarks[k]) || ''; }
+function isPyqOrTest(text) {
+  return /^🎯\s*(MOCK|PYQ)/i.test(text) || /GATE DA 20\d\d paper again/i.test(text)
+      || /^📝\s*GO (Test Series|Weekly Quiz)/i.test(text) || /Topic (Wise )?Test/i.test(text)
+      || /Rapid Fire Test/i.test(text) || /Weekly Quiz/i.test(text)
+      || /^(🎯|📘)\s*PYQ/i.test(text) || /PYQ warm-up/i.test(text)
+      || /Solve 10 PYQs/i.test(text) || /20 easy PYQs/i.test(text)
+      || (/GATE PYQ/i.test(text) && !/finish anything|Catch up|Re-solve every wrong/i.test(text));
 }
 
 // ─── CHEER & CELEBRATION ─────────────────────────────────────────────────
@@ -2521,7 +2594,7 @@ function markDay(i) {
 function resetAll() {
   if (!editable()) return;
   if (!confirm('Reset ALL progress?')) return;
-  state.done = {};
+  state.done = {}; state.marks = {}; state.remarks = {};
   if (mode === 'owner') { pending = {}; resetSeq++; persistPending(); }
   renderAll();
   queueSave(0);
