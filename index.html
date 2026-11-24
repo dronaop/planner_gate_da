@@ -1686,6 +1686,9 @@ function renderPyqList(allItems) {
       const remarkVal = esc(getRemark(item.key));
       const ek = esc(item.key);
       const canEdit = editable();
+      const actionsList = (state.actions && state.actions[item.key]) || [];
+      const hasActions = actionsList.length > 0;
+      const pendingCount = actionsList.filter(a => !a.done).length;
       return `
         <div class="pyq-row ${done ? 'done' : ''}" id="pyq_row_${item.key}">
           <div class="task-cb">
@@ -1699,6 +1702,7 @@ function renderPyqList(allItems) {
               <span class="pyq-badge pyq-badge-day">${esc(item.dayTag)}</span>
               <span class="course-chip" style="background:${item.subjBg};color:${item.subjColor}">${item.subjIcon} ${esc(item.subjName)}</span>
               <span class="pyq-badge-session">${esc(item.session)}</span>
+              ${hasActions ? `<span class="task-action-pill" style="cursor:pointer" onclick="openActionItemsModal('${ek}')" title="View action items for this test">⚡ Action Items (${pendingCount ? pendingCount + ' pending' : '✓ done'})</span>` : ''}
             </div>
             <div class="pyq-row-title">${renderTask(item.text, item.key)}</div>
             <div class="pyq-row-extra">
@@ -1710,12 +1714,15 @@ function renderPyqList(allItems) {
                 <span class="pyq-remark-label">Remark:</span>
                 <input type="text" class="pyq-remark-input" placeholder="Paste result link or analysis notes…" value="${remarkVal}" ${canEdit ? '' : 'disabled'} onchange="setRemark('${ek}', this.value)" />
               </div>
-              <button class="test-action-btn" type="button" onclick="openActionItemsModal('${ek}')" title="Manage Action Items for this test">
-                ⚡ Action Items (${(state.actions && state.actions[ek]) ? state.actions[ek].length : 0})
+              <button class="test-action-btn ${hasActions ? 'has-actions' : ''}" type="button" onclick="openActionItemsModal('${ek}')" style="${hasActions ? 'background:color-mix(in srgb, var(--s-prob) 15%, var(--sheet));border-color:var(--s-prob);font-weight:700;color:var(--ink)' : ''}" title="${hasActions ? 'Click to view action items for this test' : 'Add action items for this test'}">
+                ⚡ Action Items (${actionsList.length}${pendingCount ? ` · <span style=\"color:var(--red)\">${pendingCount}</span>` : ''})
               </button>
             </div>
           </div>
-          <button class="pyq-jump-btn" onclick="jumpToDayAndClose(${item.dayIndex})" title="Jump to ${item.dayTag} in planner">Go to day →</button>
+          <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0;align-items:flex-end">
+            ${hasActions ? `<button class="pyq-jump-btn" style="background:var(--ink);color:var(--sheet);border-color:var(--ink)" onclick="openActionItemsModal('${ek}')" title="Redirect to Action Items for this test">View Action Items ⚡</button>` : ''}
+            <button class="pyq-jump-btn" onclick="jumpToDayAndClose(${item.dayIndex})" title="Jump to ${item.dayTag} in planner">Go to day →</button>
+          </div>
         </div>
       `;
     }).join('');
@@ -1845,6 +1852,7 @@ function deleteActionItem(testKey, actionId) {
 let currentActionTestKey = 'all';
 
 function openActionItemsModal(filterKey) {
+  closePyqTests();
   const modal = document.getElementById('action-items-modal');
   if (!modal) return;
   currentActionTestKey = filterKey || 'all';
