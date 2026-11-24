@@ -477,7 +477,35 @@
   .task-remark-link:hover { color: var(--done); }
   .task-remark-text { display: inline; font-size: 0.68rem; color: var(--ink-3); margin-left: 4px; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: 1px; }
 
-  /* ── Toasts, confetti, cheer ── */
+  /* ── Action Items & Error Log Modal ── */
+  .actions-modal { max-width: 880px; width: 95%; max-height: 88vh; display: flex; flex-direction: column; padding: 22px 24px 18px; }
+  .actions-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; gap: 12px; }
+  .actions-header h2 { margin-bottom: 2px; font-size: 1.3rem; }
+  .actions-header p { font-size: 0.84rem; color: var(--ink-2); margin-bottom: 0; }
+  .actions-kpi-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin: 10px 0 12px; }
+  .actions-kpi-card { background: color-mix(in srgb, var(--rule) 25%, var(--sheet)); border: 1px solid var(--rule); border-radius: 4px; padding: 8px 10px; }
+  .actions-kpi-num { font-family: var(--font-c); font-weight: 700; font-size: 1.15rem; color: var(--ink); line-height: 1.1; }
+  .actions-kpi-lbl { font-size: 0.68rem; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
+  .actions-controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; padding: 8px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); margin-bottom: 10px; }
+  .actions-list { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; flex: 1; min-height: 220px; max-height: 52vh; padding-right: 4px; }
+  .test-action-card { border: 1px solid var(--rule); border-radius: 6px; background: color-mix(in srgb, var(--sheet) 92%, var(--paper)); padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+  .test-action-card:hover { border-color: var(--ink-3); }
+  .test-action-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .test-action-title { font-weight: 600; font-size: 0.92rem; color: var(--ink); display: flex; align-items: center; gap: 8px; }
+  .test-action-meta { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; }
+  .action-item-row { display: flex; align-items: flex-start; gap: 10px; padding: 6px 8px; background: var(--sheet); border: 1px solid var(--rule); border-radius: 4px; font-size: 0.84rem; line-height: 1.4; }
+  .action-item-row.done { opacity: 0.65; }
+  .action-item-row.done .action-item-text { text-decoration: line-through; color: var(--ink-3); }
+  .action-item-text { flex: 1; }
+  .action-tag { font-family: var(--font-c); font-size: 0.68rem; font-weight: 700; padding: 1px 6px; border-radius: 3px; vertical-align: 1px; margin-right: 6px; display: inline-block; }
+  .tag-concept { background: color-mix(in srgb, var(--s-dsa) 15%, transparent); color: var(--s-dsa); }
+  .tag-silly { background: color-mix(in srgb, var(--red) 15%, transparent); color: var(--red); }
+  .tag-time { background: color-mix(in srgb, var(--s-calc) 15%, transparent); color: var(--s-calc); }
+  .tag-msq { background: color-mix(in srgb, var(--s-prob) 15%, transparent); color: var(--s-prob); }
+  .test-action-btn { font-size: 0.72rem; font-weight: 600; padding: 3px 8px; border-radius: 4px; border: 1px solid var(--rule); background: var(--sheet); color: var(--ink); cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
+  .test-action-btn:hover { border-color: var(--ink); background: color-mix(in srgb, var(--hl) 15%, var(--sheet)); }
+  .task-action-pill { display: inline-flex; align-items: center; gap: 3px; font-size: 0.68rem; font-weight: 600; padding: 1px 6px; border-radius: 3px; background: color-mix(in srgb, var(--s-prob) 15%, transparent); color: var(--s-prob); border: 1px solid color-mix(in srgb, var(--s-prob) 30%, transparent); margin-left: 6px; vertical-align: 1px; cursor: pointer; }
+  .task-action-pill:hover { background: color-mix(in srgb, var(--s-prob) 25%, transparent); }
   .toasts { position: fixed; right: 16px; bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); z-index: 300; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; pointer-events: none; }
   .toast { pointer-events: auto; max-width: min(360px, calc(100vw - 32px)); font-size: 0.86rem; font-weight: 500; color: var(--sheet); background: var(--ink); border-radius: 6px; padding: 10px 14px; box-shadow: var(--shadow); animation: toastIn 0.25s ease-out; }
   .toast.good { border-left: 4px solid var(--hl); }
@@ -797,8 +825,9 @@ let remote = loadCache();         // last progress.json seen { done, updatedAt }
 let pending = {};                 // taskKey -> true / false, not yet committed
 let pendingMarks = {};            // taskKey -> string | null
 let pendingRemarks = {};          // taskKey -> string | null
+let pendingActions = {};          // taskKey -> array of action items | null
 let resetSeq = 0, savedResetSeq = 0;
-let state = { done: { ...remote.done }, marks: { ...remote.marks }, remarks: { ...remote.remarks }, updatedAt: remote.updatedAt };
+let state = { done: { ...remote.done }, marks: { ...remote.marks }, remarks: { ...remote.remarks }, actions: { ...(remote.actions || {}) }, updatedAt: remote.updatedAt };
 let saving = false, saveTimer = null, saveError = '', saveAction = '', loadError = '';
 let lastFetch = 0, retryDelay = 5000;
 
@@ -827,13 +856,26 @@ function normalize(s) {
   if (s && s.marks && typeof s.marks === 'object') for (const k in s.marks) if (s.marks[k] !== '' && s.marks[k] != null) marks[k] = String(s.marks[k]);
   const remarks = {};
   if (s && s.remarks && typeof s.remarks === 'object') for (const k in s.remarks) if (s.remarks[k]) remarks[k] = String(s.remarks[k]);
-  return { done, marks, remarks, updatedAt: (s && typeof s.updatedAt === 'number') ? s.updatedAt : null };
+  const actions = {};
+  if (s && s.actions && typeof s.actions === 'object') {
+    for (const k in s.actions) {
+      if (Array.isArray(s.actions[k])) {
+        actions[k] = s.actions[k].map(item => ({
+          id: item.id || ('act_' + Math.random().toString(36).substr(2, 6)),
+          text: String(item.text || ''),
+          tag: String(item.tag || 'concept'),
+          done: !!item.done
+        }));
+      }
+    }
+  }
+  return { done, marks, remarks, actions, updatedAt: (s && typeof s.updatedAt === 'number') ? s.updatedAt : null };
 }
 function loadCache() { try { return normalize(JSON.parse(lsGet(CACHE_KEY))); } catch { return normalize(null); } }
 function saveCache(s) { lsSet(CACHE_KEY, JSON.stringify(s)); }
 function isDone(k) { return !!state.done[k]; }
 function editable() { return (mode === 'owner' && ready) || mode === 'local'; }
-function hasPending() { return resetSeq > savedResetSeq || Object.keys(pending).length > 0 || Object.keys(pendingMarks).length > 0 || Object.keys(pendingRemarks).length > 0; }
+function hasPending() { return resetSeq > savedResetSeq || Object.keys(pending).length > 0 || Object.keys(pendingMarks).length > 0 || Object.keys(pendingRemarks).length > 0 || Object.keys(pendingActions).length > 0; }
 
 function loadUI() {
   try { const u = JSON.parse(lsGet(UI_KEY)); if (u && u.open) return u; } catch {}
@@ -842,7 +884,7 @@ function loadUI() {
 function saveUI() { lsSet(UI_KEY, JSON.stringify(ui)); }
 
 function persistPending() {
-  if (hasPending()) lsSet(PENDING_KEY, JSON.stringify({ ops: pending, marks: pendingMarks, remarks: pendingRemarks, reset: resetSeq > savedResetSeq }));
+  if (hasPending()) lsSet(PENDING_KEY, JSON.stringify({ ops: pending, marks: pendingMarks, remarks: pendingRemarks, actions: pendingActions, reset: resetSeq > savedResetSeq }));
   else lsDel(PENDING_KEY);
 }
 function restorePending() {
@@ -851,6 +893,7 @@ function restorePending() {
     if (p && p.ops) pending = p.ops;
     if (p && p.marks) pendingMarks = p.marks;
     if (p && p.remarks) pendingRemarks = p.remarks;
+    if (p && p.actions) pendingActions = p.actions;
     if (p && p.reset) { resetSeq = 1; savedResetSeq = 0; }
   } catch {}
 }
@@ -862,7 +905,9 @@ function withPending(base) {
   for (const k in pendingMarks) { if (pendingMarks[k]) marks[k] = pendingMarks[k]; else delete marks[k]; }
   const remarks = { ...base.remarks };
   for (const k in pendingRemarks) { if (pendingRemarks[k]) remarks[k] = pendingRemarks[k]; else delete remarks[k]; }
-  return { done, marks, remarks, updatedAt: base.updatedAt };
+  const actions = { ...(base.actions || {}) };
+  for (const k in pendingActions) { if (pendingActions[k]) actions[k] = pendingActions[k]; else delete actions[k]; }
+  return { done, marks, remarks, actions, updatedAt: base.updatedAt };
 }
 
 // ── GitHub Contents API ──
@@ -963,7 +1008,7 @@ async function saveNow() {
   if (mode !== 'owner' || saving || !hasPending()) return;
   saving = true; saveError = ''; saveAction = '';
   renderStatus();
-  const ops = { ...pending }, opsM = { ...pendingMarks }, opsR = { ...pendingRemarks }, seq = resetSeq, reset = resetSeq > savedResetSeq;
+  const ops = { ...pending }, opsM = { ...pendingMarks }, opsR = { ...pendingRemarks }, opsA = { ...pendingActions }, seq = resetSeq, reset = resetSeq > savedResetSeq;
   try {
     for (let attempt = 0; ; attempt++) {
       // Always start from the latest committed file, so ticks made on another
@@ -984,7 +1029,10 @@ async function saveNow() {
       const sortedRemarks = {};
       Object.keys(remarks).sort().forEach(k => { sortedRemarks[k] = remarks[k]; });
 
-      const next = { done: sorted, marks: sortedMarks, remarks: sortedRemarks, updatedAt: Date.now() };
+      const actions = reset ? {} : { ...(cur.data.actions || {}) };
+      for (const k in opsA) { if (opsA[k]) actions[k] = opsA[k]; else delete actions[k]; }
+
+      const next = { done: sorted, marks: sortedMarks, remarks: sortedRemarks, actions, updatedAt: Date.now() };
       const body = { message: commitMessage(ops, reset), content: b64encode(JSON.stringify(next, null, 2) + '\n') };
       if (cur.sha) body.sha = cur.sha;
       if (CONFIG.branch) body.branch = CONFIG.branch;
@@ -999,6 +1047,7 @@ async function saveNow() {
       for (const k in ops) if (pending[k] === ops[k]) delete pending[k];
       for (const k in opsM) if (pendingMarks[k] === opsM[k]) delete pendingMarks[k];
       for (const k in opsR) if (pendingRemarks[k] === opsR[k]) delete pendingRemarks[k];
+      for (const k in opsA) if (pendingActions[k] === opsA[k]) delete pendingActions[k];
       if (seq > savedResetSeq) savedResetSeq = seq;
       persistPending();
       remote = next; saveCache(remote);
@@ -1036,7 +1085,7 @@ function tokenRejected() {
   mode = 'viewer'; saving = false;
   saveError = hasPending() ? 'Token expired · sign in to save' : 'Token expired · sign in again';
   saveAction = 'openLogin()';
-  state = { done: { ...remote.done }, marks: { ...remote.marks }, remarks: { ...remote.remarks }, updatedAt: remote.updatedAt };
+  state = { done: { ...remote.done }, marks: { ...remote.marks }, remarks: { ...remote.remarks }, actions: { ...(remote.actions || {}) }, updatedAt: remote.updatedAt };
   ready = true;
   renderAll();
 }
@@ -1087,7 +1136,7 @@ function signOut() {
   token = ''; lsDel(TOKEN_KEY);
   clearTimeout(saveTimer);
   mode = 'viewer'; saveError = ''; saveAction = '';
-  state = { done: { ...remote.done }, marks: { ...remote.marks }, remarks: { ...remote.remarks }, updatedAt: remote.updatedAt };
+  state = { done: { ...remote.done }, marks: { ...remote.marks }, remarks: { ...remote.remarks }, actions: { ...(remote.actions || {}) }, updatedAt: remote.updatedAt };
   renderAll();
 }
 
@@ -1268,6 +1317,11 @@ function renderTask(t, key) {
       const isUrl = /^https?:\/\//i.test(r);
       if (isUrl) result += `<a class="task-remark-link" href="${esc(r)}" target="_blank" rel="noopener" title="${esc(r)}" onclick="event.stopPropagation()">🔗 Result</a>`;
       else result += `<span class="task-remark-text" title="${esc(r)}">💬 ${esc(r)}</span>`;
+    }
+    const acts = getTaskActions(key);
+    if (acts && acts.length > 0) {
+      const openActs = acts.filter(a => !a.done).length;
+      result += `<span class="task-action-pill" onclick="event.stopPropagation();openActionItemsModal('${key}')" title="View ${acts.length} Action Items for this test">⚡ Action Items (${openActs ? openActs + ' pending' : '✓ done'})</span>`;
     }
   }
   return result;
@@ -1641,6 +1695,9 @@ function renderPyqList(allItems) {
                 <span class="pyq-remark-label">Remark:</span>
                 <input type="text" class="pyq-remark-input" placeholder="Paste result link or analysis notes…" value="${remarkVal}" ${canEdit ? '' : 'disabled'} onchange="setRemark('${ek}', this.value)" />
               </div>
+              <button class="test-action-btn" type="button" onclick="openActionItemsModal('${ek}')" title="Manage Action Items for this test">
+                ⚡ Action Items (${(state.actions && state.actions[ek]) ? state.actions[ek].length : 0})
+              </button>
             </div>
           </div>
           <button class="pyq-jump-btn" onclick="jumpToDayAndClose(${item.dayIndex})" title="Jump to ${item.dayTag} in planner">Go to day →</button>
@@ -1724,6 +1781,198 @@ function setRemark(k, val) {
 }
 function getMarks(k) { return (state.marks && state.marks[k]) || ''; }
 function getRemark(k) { return (state.remarks && state.remarks[k]) || ''; }
+function getTaskActions(k) { return (state.actions && state.actions[k]) || []; }
+
+function toggleActionItem(testKey, actionId) {
+  if (!editable()) return;
+  if (!state.actions) state.actions = {};
+  const list = state.actions[testKey] || [];
+  const item = list.find(a => a.id === actionId);
+  if (item) {
+    item.done = !item.done;
+    if (mode === 'owner') { pendingActions[testKey] = [...list]; persistPending(); }
+    renderActionItemsModal();
+    renderMain();
+    queueSave();
+  }
+}
+
+function addActionItem(testKey, text, tag) {
+  if (!editable()) return;
+  text = (text || '').trim();
+  if (!text) return;
+  if (!state.actions) state.actions = {};
+  if (!state.actions[testKey]) state.actions[testKey] = [];
+  const newItem = {
+    id: 'act_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 4),
+    text,
+    tag: tag || 'concept',
+    done: false
+  };
+  state.actions[testKey].push(newItem);
+  if (mode === 'owner') { pendingActions[testKey] = [...state.actions[testKey]]; persistPending(); }
+  renderActionItemsModal();
+  renderMain();
+  queueSave();
+}
+
+function deleteActionItem(testKey, actionId) {
+  if (!editable()) return;
+  if (!state.actions || !state.actions[testKey]) return;
+  state.actions[testKey] = state.actions[testKey].filter(a => a.id !== actionId);
+  if (!state.actions[testKey].length) delete state.actions[testKey];
+  if (mode === 'owner') { pendingActions[testKey] = state.actions[testKey] || null; persistPending(); }
+  renderActionItemsModal();
+  renderMain();
+  queueSave();
+}
+
+let currentActionTestKey = 'all';
+
+function openActionItemsModal(filterKey) {
+  const modal = document.getElementById('action-items-modal');
+  if (!modal) return;
+  currentActionTestKey = filterKey || 'all';
+  renderActionItemsModal();
+  modal.hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+
+function closeActionItemsModal() {
+  const modal = document.getElementById('action-items-modal');
+  if (modal) modal.hidden = true;
+  document.body.style.overflow = '';
+}
+
+function renderActionItemsModal() {
+  const listEl = document.getElementById('action-items-list');
+  const kpiEl = document.getElementById('action-kpi-bar');
+  const filterSelect = document.getElementById('action-test-select');
+  if (!listEl) return;
+
+  const allItems = getPyqAndTestItems();
+  const testMap = {};
+  allItems.forEach(it => { testMap[it.key] = it; });
+
+  // Update filter select options
+  if (filterSelect) {
+    const activeKeysWithActions = Object.keys(state.actions || {});
+    let options = '<option value="all">⚡ All Tests & Quizzes</option>';
+    allItems.forEach(it => {
+      const hasActions = (state.actions && state.actions[it.key] && state.actions[it.key].length > 0);
+      const isSel = (it.key === currentActionTestKey);
+      if (hasActions || isSel) {
+        options += `<option value="${it.key}" ${isSel ? 'selected' : ''}>${it.dayTag} · ${esc(it.subjName)}: ${esc(it.text.replace(/^[📝🎯📘]\s*/, '').substring(0, 48))}...</option>`;
+      }
+    });
+    filterSelect.innerHTML = options;
+  }
+
+  // Calculate KPIs
+  let totalActions = 0, doneActions = 0, testsWithActions = 0;
+  for (const k in (state.actions || {})) {
+    const list = state.actions[k] || [];
+    if (list.length > 0) testsWithActions++;
+    totalActions += list.length;
+    doneActions += list.filter(a => a.done).length;
+  }
+  const pendingActionsCount = totalActions - doneActions;
+
+  if (kpiEl) {
+    const pct = totalActions ? Math.round((doneActions / totalActions) * 100) : 0;
+    kpiEl.innerHTML = `
+      <div class="actions-kpi-card">
+        <div class="actions-kpi-num">${testsWithActions}</div>
+        <div class="actions-kpi-lbl">Tests with Action Lists</div>
+      </div>
+      <div class="actions-kpi-card">
+        <div class="actions-kpi-num">${pendingActionsCount} <span style="font-size:0.8rem;color:var(--red)">pending</span></div>
+        <div class="actions-kpi-lbl">Action Items Remaining</div>
+      </div>
+      <div class="actions-kpi-card">
+        <div class="actions-kpi-num">${doneActions} <span style="font-size:0.8rem;color:var(--done)">/ ${totalActions}</span></div>
+        <div class="actions-kpi-lbl">Completed (${pct}%)</div>
+      </div>
+    `;
+  }
+
+  // Display Cards
+  const canEdit = editable();
+  const keysToRender = currentActionTestKey === 'all'
+    ? Object.keys(state.actions || {})
+    : [currentActionTestKey];
+
+  if (!keysToRender.length || !keysToRender.some(k => state.actions && state.actions[k] && state.actions[k].length)) {
+    listEl.innerHTML = `
+      <div style="text-align:center;padding:40px 16px;color:var(--ink-3);font-size:0.88rem">
+        No action items recorded for this filter.<br>
+        <span style="font-size:0.78rem;margin-top:6px;display:inline-block">Add mistakes and concepts to revise from your test analysis below!</span>
+      </div>
+    `;
+  } else {
+    listEl.innerHTML = keysToRender.map(k => {
+      const items = (state.actions && state.actions[k]) || [];
+      if (!items.length) return '';
+      const testInfo = testMap[k];
+      const testTitle = testInfo ? esc(testInfo.text) : k;
+      const testSubj = testInfo ? `${testInfo.subjIcon} ${esc(testInfo.subjName)}` : '';
+      const testMarks = getMarks(k);
+      const testRemark = getRemark(k);
+
+      const itemsHtml = items.map(act => {
+        let tagClass = 'tag-concept';
+        if (act.tag === 'silly') tagClass = 'tag-silly';
+        else if (act.tag === 'time') tagClass = 'tag-time';
+        else if (act.tag === 'msq') tagClass = 'tag-msq';
+
+        return `
+          <div class="action-item-row ${act.done ? 'done' : ''}">
+            <div class="task-cb" style="margin-top:2px">
+              <input type="checkbox" id="act_cb_${act.id}" ${act.done ? 'checked' : ''} ${canEdit ? '' : 'disabled'} onchange="toggleActionItem('${k}', '${act.id}')">
+              <label for="act_cb_${act.id}"></label>
+            </div>
+            <div class="action-item-text">
+              <span class="action-tag ${tagClass}">${esc(act.tag.toUpperCase())}</span>
+              ${esc(act.text)}
+            </div>
+            ${canEdit ? `<button class="reset-btn" onclick="deleteActionItem('${k}', '${act.id}')" title="Delete action item" style="padding:1px 5px;font-size:0.75rem">✕</button>` : ''}
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <div class="test-action-card">
+          <div class="test-action-head">
+            <div class="test-action-title">
+              <span>${testSubj ? `<span class="course-chip" style="background:${testInfo.subjBg};color:${testInfo.subjColor}">${testSubj}</span>` : ''}</span>
+              <span>${testTitle}</span>
+            </div>
+            <div class="test-action-meta">
+              ${testMarks ? `<span class="task-marks-badge">📊 ${esc(testMarks)}</span>` : ''}
+              ${testRemark ? `<a class="test-action-btn" href="${esc(testRemark)}" target="_blank" rel="noopener">🔗 Result Link</a>` : ''}
+              ${testInfo ? `<button class="test-action-btn" onclick="closeActionItemsModal();jumpToDay(${testInfo.dayIndex})">Go to day (${testInfo.dayTag}) →</button>` : ''}
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            ${itemsHtml}
+          </div>
+          ${canEdit ? `
+            <div style="display:flex;gap:6px;align-items:center;margin-top:6px;padding-top:6px;border-top:1px dashed var(--rule)">
+              <input type="text" id="new_act_input_${k}" placeholder="Add revision point or error note..." style="flex:1;padding:4px 8px;font:inherit;font-size:0.8rem;border:1px solid var(--rule);border-radius:4px;background:var(--paper);color:var(--ink)" onkeydown="if(event.key==='Enter'){addActionItem('${k}', this.value, document.getElementById('new_act_tag_${k}').value);this.value='';}" />
+              <select id="new_act_tag_${k}" style="padding:4px 6px;font:inherit;font-size:0.75rem;border:1px solid var(--rule);border-radius:4px;background:var(--paper);color:var(--ink)">
+                <option value="concept">Concept</option>
+                <option value="silly">Silly Mistake</option>
+                <option value="time">Time Mgmt</option>
+                <option value="msq">MSQ</option>
+              </select>
+              <button type="button" class="btn" style="padding:4px 10px;font-size:0.75rem" onclick="const inp=document.getElementById('new_act_input_${k}');addActionItem('${k}', inp.value, document.getElementById('new_act_tag_${k}').value);inp.value='';">Add</button>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }).join('');
+  }
+}
 function isPyqOrTest(text) {
   return /^🎯\s*(MOCK|PYQ)/i.test(text) || /GATE DA 20\d\d paper again/i.test(text)
       || /^📝\s*GO (Test Series|Weekly Quiz)/i.test(text) || /Topic (Wise )?Test/i.test(text)
@@ -2191,6 +2440,8 @@ document.addEventListener('keydown', e => {
   if (an && !an.hidden) { if (e.key === 'Escape') closeAnalytics(); return; }
   const pm = document.getElementById('pyq-tests-modal');
   if (pm && !pm.hidden) { if (e.key === 'Escape') closePyqTests(); return; }
+  const am = document.getElementById('action-items-modal');
+  if (am && !am.hidden) { if (e.key === 'Escape') closeActionItemsModal(); return; }
   const lg = document.getElementById('login');
   if (lg && !lg.hidden) { if (e.key === 'Escape') closeLogin(); return; }
   if (e.key === 'ArrowLeft' && activeWeek > FIRST_WEEK) switchWeek(activeWeek - 1);
@@ -2220,6 +2471,7 @@ function renderShell() {
       </div>
       <button class="nav-btn" onclick="openAnalytics()" title="View subject-wise progress breakdown">Analytics</button>
       <button class="nav-btn" onclick="openPyqTests()" title="View all PYQs & Tests Directory">🎯 PYQs & Tests</button>
+      <button class="nav-btn" onclick="openActionItemsModal('all')" title="View Action Items & Test Error Log">⚡ Action Items</button>
       <button class="cheer-btn" id="cheer-btn" onclick="sendCheer(event)" title="Send Deepanshu a cheer!">
         🔥 Cheer <span class="cheer-badge" id="cheer-badge">${cheerCount > 0 ? cheerCount : ''}</span>
       </button>
@@ -2282,6 +2534,33 @@ function renderShell() {
     <div class="modal-actions" style="margin-top:10px;justify-content:space-between;align-items:center">
       <span style="font-size:0.75rem;color:var(--ink-3)" id="pyq-count-info"></span>
       <button type="button" class="btn" onclick="closePyqTests()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ACTION ITEMS & ERROR LOG MODAL -->
+<div class="modal-back" id="action-items-modal" hidden onclick="if(event.target===this)closeActionItemsModal()">
+  <div class="modal actions-modal">
+    <div class="actions-header">
+      <div>
+        <h2>⚡ Test Action Items & Error Log</h2>
+        <p>Actionable takeaways, concepts to revise, and silly mistakes identified from each test attempt.</p>
+      </div>
+      <button class="reset-btn" onclick="closeActionItemsModal()" title="Close (Esc)" style="font-size:1.1rem;padding:4px 8px">✕</button>
+    </div>
+    <div id="action-kpi-bar" class="actions-kpi-bar"></div>
+    <div class="actions-controls">
+      <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:200px">
+        <label for="action-test-select" style="font-size:0.76rem;color:var(--ink-2);font-weight:600">Filter Test:</label>
+        <select id="action-test-select" class="pyq-select" style="flex:1" onchange="currentActionTestKey=this.value;renderActionItemsModal()">
+          <option value="all">⚡ All Tests & Quizzes</option>
+        </select>
+      </div>
+    </div>
+    <div class="actions-list" id="action-items-list"></div>
+    <div class="modal-actions" style="margin-top:12px;justify-content:space-between;align-items:center">
+      <span style="font-size:0.75rem;color:var(--ink-3)">Tip: Tick checkboxes when you finish revising each concept!</span>
+      <button type="button" class="btn" onclick="closeActionItemsModal()">Close</button>
     </div>
   </div>
 </div>
@@ -2358,6 +2637,9 @@ function renderTabs() {
   }
   html += `<div class="wtab wtab-special" onclick="openPyqTests()" title="View all PYQs & Tests Directory">
     <span>🎯 PYQs & Tests</span>
+  </div>
+  <div class="wtab wtab-special" style="margin-left:2px;border-left:0;color:var(--s-prob)" onclick="openActionItemsModal('all')" title="View Action Items & Test Error Log">
+    <span>⚡ Action Items</span>
   </div>`;
   tabs.innerHTML = html;
 }
@@ -2619,8 +2901,8 @@ function markDay(i) {
 function resetAll() {
   if (!editable()) return;
   if (!confirm('Reset ALL progress?')) return;
-  state.done = {}; state.marks = {}; state.remarks = {};
-  if (mode === 'owner') { pending = {}; resetSeq++; persistPending(); }
+  state.done = {}; state.marks = {}; state.remarks = {}; state.actions = {};
+  if (mode === 'owner') { pending = {}; pendingMarks = {}; pendingRemarks = {}; pendingActions = {}; resetSeq++; persistPending(); }
   renderAll();
   queueSave(0);
 }
