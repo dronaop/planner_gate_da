@@ -815,6 +815,21 @@ const UI_KEY = 'gate_daily_ui';           // per viewer: which days are expanded
 const SAVE_DELAY = 2500;
 const REFRESH_MS = 5 * 60 * 1000;
 
+const DEFAULT_ACTIONS = {
+  'm_21_4': [
+    { id: 'act_q1_venn', text: 'Q1 (Venn Laws): Remember P(E^c ∩ F) = P(F) - P(E ∩ F). Do not mix up complement difference rules in Venn diagrams.', tag: 'concept', done: false },
+    { id: 'act_q2_indep', text: 'Q2 (Independence vs Disjoint): P(E1 ∪ E2) = P(E1) + P(E2) is ONLY for mutually exclusive events. For independent events, P(E1 ∪ E2) = P(E1) + P(E2) - P(E1)P(E2). (Mistake made in 28 sec rush!)', tag: 'silly', done: false },
+    { id: 'act_q4_deriv', text: 'Q4 (Fraction derivatives): P(B|A) = P(A,B)/P(A). When numerator decreases and denominator increases, P(B|A) must decrease. Never assume "All of above" without checking P(B).', tag: 'concept', done: false },
+    { id: 'act_q6_msq', text: 'Q6 (MSQ Chain Rule): By basic joint definition P(A,B,C) = P(C|A,B)*P(A,B) requires NO independence assumptions. Check all standard conditioning forms in MSQs.', tag: 'msq', done: false },
+    { id: 'act_q8_marginal', text: 'Q8 (Marginalization Shortcut): To find x + y = P(A^c, B) + P(A^c, B^c), recognize it simply equals P(A^c) = 1 - P(A) = 0.40. Avoid solving individual equations (saved 4.5 minutes).', tag: 'time', done: false },
+    { id: 'act_q15_bounds', text: 'Q15 (Axiom Bounds): P(E)=0.3, P(F)=0.8 cannot be mutually exclusive because P(E)+P(F) = 1.1 > 1 (violates axiom P(S) <= 1).', tag: 'concept', done: false }
+  ]
+};
+
+const DEFAULT_MARKS = {
+  'm_21_4': '9.00/22 (40.9%)'
+};
+
 const REPO = detectRepo();
 let ui = loadUI();                // { open: { dayIndex: true } }
 let activeWeek = 0;
@@ -848,21 +863,6 @@ function lsGet(k) { try { return localStorage.getItem(k); } catch { return null;
 function lsSet(k, v) { try { localStorage.setItem(k, v); } catch {} }
 function lsDel(k) { try { localStorage.removeItem(k); } catch {} }
 function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
-
-const DEFAULT_ACTIONS = {
-  'm_21_4': [
-    { id: 'act_q1_venn', text: 'Q1 (Venn Laws): Remember P(E^c ∩ F) = P(F) - P(E ∩ F). Do not mix up complement difference rules in Venn diagrams.', tag: 'concept', done: false },
-    { id: 'act_q2_indep', text: 'Q2 (Independence vs Disjoint): P(E1 ∪ E2) = P(E1) + P(E2) is ONLY for mutually exclusive events. For independent events, P(E1 ∪ E2) = P(E1) + P(E2) - P(E1)P(E2). (Mistake made in 28 sec rush!)', tag: 'silly', done: false },
-    { id: 'act_q4_deriv', text: 'Q4 (Fraction derivatives): P(B|A) = P(A,B)/P(A). When numerator decreases and denominator increases, P(B|A) must decrease. Never assume "All of above" without checking P(B).', tag: 'concept', done: false },
-    { id: 'act_q6_msq', text: 'Q6 (MSQ Chain Rule): By basic joint definition P(A,B,C) = P(C|A,B)*P(A,B) requires NO independence assumptions. Check all standard conditioning forms in MSQs.', tag: 'msq', done: false },
-    { id: 'act_q8_marginal', text: 'Q8 (Marginalization Shortcut): To find x + y = P(A^c, B) + P(A^c, B^c), recognize it simply equals P(A^c) = 1 - P(A) = 0.40. Avoid solving individual equations (saved 4.5 minutes).', tag: 'time', done: false },
-    { id: 'act_q15_bounds', text: 'Q15 (Axiom Bounds): P(E)=0.3, P(F)=0.8 cannot be mutually exclusive because P(E)+P(F) = 1.1 > 1 (violates axiom P(S) <= 1).', tag: 'concept', done: false }
-  ]
-};
-
-const DEFAULT_MARKS = {
-  'm_21_4': '9.00/22 (40.9%)'
-};
 
 function normalize(s) {
   const done = {};
