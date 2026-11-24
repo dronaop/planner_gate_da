@@ -795,6 +795,8 @@ let ready = false;                // first load from GitHub finished
 let token = lsGet(TOKEN_KEY) || '';
 let remote = loadCache();         // last progress.json seen { done, updatedAt }
 let pending = {};                 // taskKey -> true / false, not yet committed
+let pendingMarks = {};            // taskKey -> string | null
+let pendingRemarks = {};          // taskKey -> string | null
 let resetSeq = 0, savedResetSeq = 0;
 let state = { done: { ...remote.done }, marks: { ...remote.marks }, remarks: { ...remote.remarks }, updatedAt: remote.updatedAt };
 let saving = false, saveTimer = null, saveError = '', saveAction = '', loadError = '';
@@ -831,7 +833,7 @@ function loadCache() { try { return normalize(JSON.parse(lsGet(CACHE_KEY))); } c
 function saveCache(s) { lsSet(CACHE_KEY, JSON.stringify(s)); }
 function isDone(k) { return !!state.done[k]; }
 function editable() { return (mode === 'owner' && ready) || mode === 'local'; }
-function hasPending() { return resetSeq > savedResetSeq || Object.keys(pending).length > 0; }
+function hasPending() { return resetSeq > savedResetSeq || Object.keys(pending).length > 0 || Object.keys(pendingMarks).length > 0 || Object.keys(pendingRemarks).length > 0; }
 
 function loadUI() {
   try { const u = JSON.parse(lsGet(UI_KEY)); if (u && u.open) return u; } catch {}
@@ -840,13 +842,15 @@ function loadUI() {
 function saveUI() { lsSet(UI_KEY, JSON.stringify(ui)); }
 
 function persistPending() {
-  if (hasPending()) lsSet(PENDING_KEY, JSON.stringify({ ops: pending, reset: resetSeq > savedResetSeq }));
+  if (hasPending()) lsSet(PENDING_KEY, JSON.stringify({ ops: pending, marks: pendingMarks, remarks: pendingRemarks, reset: resetSeq > savedResetSeq }));
   else lsDel(PENDING_KEY);
 }
 function restorePending() {
   try {
     const p = JSON.parse(lsGet(PENDING_KEY));
     if (p && p.ops) pending = p.ops;
+    if (p && p.marks) pendingMarks = p.marks;
+    if (p && p.remarks) pendingRemarks = p.remarks;
     if (p && p.reset) { resetSeq = 1; savedResetSeq = 0; }
   } catch {}
 }
@@ -854,7 +858,11 @@ function restorePending() {
 function withPending(base) {
   const done = resetSeq > savedResetSeq ? {} : { ...base.done };
   for (const k in pending) { if (pending[k]) done[k] = true; else delete done[k]; }
-  return { done, marks: { ...base.marks }, remarks: { ...base.remarks }, updatedAt: base.updatedAt };
+  const marks = { ...base.marks };
+  for (const k in pendingMarks) { if (pendingMarks[k]) marks[k] = pendingMarks[k]; else delete marks[k]; }
+  const remarks = { ...base.remarks };
+  for (const k in pendingRemarks) { if (pendingRemarks[k]) remarks[k] = pendingRemarks[k]; else delete remarks[k]; }
+  return { done, marks, remarks, updatedAt: base.updatedAt };
 }
 
 // ── GitHub Contents API ──
@@ -955,7 +963,7 @@ async function saveNow() {
   if (mode !== 'owner' || saving || !hasPending()) return;
   saving = true; saveError = ''; saveAction = '';
   renderStatus();
-  const ops = { ...pending }, seq = resetSeq, reset = resetSeq > savedResetSeq;
+  const ops = { ...pending }, opsM = { ...pendingMarks }, opsR = { ...pendingRemarks }, seq = resetSeq, reset = resetSeq > savedResetSeq;
   try {
     for (let attempt = 0; ; attempt++) {
       // Always start from the latest committed file, so ticks made on another
@@ -965,7 +973,18 @@ async function saveNow() {
       for (const k in ops) { if (ops[k]) done[k] = true; else delete done[k]; }
       const sorted = {};
       Object.keys(done).sort().forEach(k => { sorted[k] = true; });
-      const next = { done: sorted, marks: state.marks || {}, remarks: state.remarks || {}, updatedAt: Date.now() };
+
+      const marks = reset ? {} : { ...(cur.data.marks || {}) };
+      for (const k in opsM) { if (opsM[k]) marks[k] = opsM[k]; else delete marks[k]; }
+      const sortedMarks = {};
+      Object.keys(marks).sort().forEach(k => { sortedMarks[k] = marks[k]; });
+
+      const remarks = reset ? {} : { ...(cur.data.remarks || {}) };
+      for (const k in opsR) { if (opsR[k]) remarks[k] = opsR[k]; else delete remarks[k]; }
+      const sortedRemarks = {};
+      Object.keys(remarks).sort().forEach(k => { sortedRemarks[k] = remarks[k]; });
+
+      const next = { done: sorted, marks: sortedMarks, remarks: sortedRemarks, updatedAt: Date.now() };
       const body = { message: commitMessage(ops, reset), content: b64encode(JSON.stringify(next, null, 2) + '\n') };
       if (cur.sha) body.sha = cur.sha;
       if (CONFIG.branch) body.branch = CONFIG.branch;
@@ -978,6 +997,8 @@ async function saveNow() {
       if (!res.ok) throw httpError(res);
       // Committed. Drop the ops that went in (unless changed again since).
       for (const k in ops) if (pending[k] === ops[k]) delete pending[k];
+      for (const k in opsM) if (pendingMarks[k] === opsM[k]) delete pendingMarks[k];
+      for (const k in opsR) if (pendingRemarks[k] === opsR[k]) delete pendingRemarks[k];
       if (seq > savedResetSeq) savedResetSeq = seq;
       persistPending();
       remote = next; saveCache(remote);
@@ -1688,6 +1709,8 @@ function setMarks(k, val) {
   if (!state.marks) state.marks = {};
   val = val.trim();
   if (val) state.marks[k] = val; else delete state.marks[k];
+  if (mode === 'owner') { pendingMarks[k] = val || null; persistPending(); }
+  renderMain();
   queueSave();
 }
 function setRemark(k, val) {
@@ -1695,6 +1718,8 @@ function setRemark(k, val) {
   if (!state.remarks) state.remarks = {};
   val = val.trim();
   if (val) state.remarks[k] = val; else delete state.remarks[k];
+  if (mode === 'owner') { pendingRemarks[k] = val || null; persistPending(); }
+  renderMain();
   queueSave();
 }
 function getMarks(k) { return (state.marks && state.marks[k]) || ''; }
