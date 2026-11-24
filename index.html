@@ -1499,6 +1499,10 @@ function getPyqAndTestItems() {
     const checkTask = (t, key, sessionName) => {
       if (/Mock \d+ analysis/i.test(t) || /GATE DA 20\d\d analysis/i.test(t)) return;
 
+      // Exclude regular video lectures that happen to have "PYQ" or "Summary & GATE PYQs" in their title
+      const isLecture = /^[A-Z0-9\s]+·\s*(\d+[A-Z]?\.|L\d+|The\s+|Functional\s+|Normal\s+|Decomposition\s+|GATE\s+PYQs\s*—|More\s+GATE\s+PYQs)/i.test(t) && !/^📝\s*GO/i.test(t);
+      if (isLecture) return;
+
       let type = null;
       let typeLabel = '';
       let chipClass = '';
